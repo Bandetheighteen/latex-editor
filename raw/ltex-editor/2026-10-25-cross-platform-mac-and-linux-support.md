@@ -4,7 +4,7 @@
 > Collected: 2026-10-25
 > Published: 2026-10-25
 
-LaTeX Editor expands its native desktop support beyond Windows to include macOS (Universal / Apple Silicon / Intel) and Linux (.deb and .AppImage).
+LaTeX Editor expands its native desktop support beyond Windows to include macOS (Apple Silicon M-Series) and Linux (.deb, .AppImage, and .rpm).
 
 Key Cross-Platform Architecture:
 - TeX Environment Discovery: macOS GUI applications do not inherit interactive terminal shell PATH. Added automated PATH resolution in Rust (`create_system_command`) targeting MacTeX (`/Library/TeX/texbin`), Homebrew (`/opt/homebrew/bin`, `/usr/local/bin`), and Linux system directories (`/usr/local/bin`, `/usr/bin`).
@@ -14,7 +14,14 @@ Key Cross-Platform Architecture:
 - Automated CI/CD Release Pipeline: Created `.github/workflows/release.yml` with a multi-runner matrix (`macos-latest` and `ubuntu-22.04`) using Tauri Action to build and publish `.dmg`, `.deb`, `.AppImage`, and `.rpm` binaries on tag push or manual workflow dispatch.
 - Official Published Multi-Platform Packages (v1.1.0):
   - macOS Disk Image: `LaTeX.Editor_1.0.0_aarch64.dmg` (45.6 MB)
+  - macOS App Archive: `LaTeX.Editor_aarch64.app.tar.gz` (45.5 MB)
   - Linux Debian package: `LaTeX.Editor_1.0.0_amd64.deb` (38.7 MB)
   - Linux AppImage: `LaTeX.Editor_1.0.0_amd64.AppImage` (111.8 MB)
   - Linux RPM package: `LaTeX.Editor-1.0.0-1.x86_64.rpm` (38.7 MB)
   - Windows Installer: `LaTeX-Editor-Native-Setup.exe` (26.6 MB)
+
+Installation and Setup by Operating System:
+- Windows: Install MiKTeX (`winget install MiKTeX.MiKTeX`) or TeX Live. Run `LaTeX-Editor-Native-Setup.exe` wizard. Windows SmartScreen info notice bypass via "More info" -> "Run anyway".
+- macOS: Install MacTeX (`brew install --cask mactex-no-gui`) or BasicTeX (`brew install --cask basictex`). Download and mount `LaTeX.Editor_1.0.0_aarch64.dmg`, drag to `/Applications`. Gatekeeper first-launch bypass via Right-click -> Open -> Open.
+- Linux: Install TeX Live via package manager (`sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries` or Fedora `sudo dnf install texlive-scheme-basic texlive-synctex`). Universal AppImage execution (`chmod +x LaTeX.Editor_1.0.0_amd64.AppImage`), Debian install (`sudo dpkg -i LaTeX.Editor_1.0.0_amd64.deb`), or RPM install (`sudo dnf install ./LaTeX.Editor-1.0.0-1.x86_64.rpm`).
+- Shortcuts: Compile via `Ctrl+S` / `Cmd+S` or `Ctrl+Enter` / `Cmd+Enter`; zoom via `Ctrl+=` / `Cmd+=` and `Ctrl+-` / `Cmd+-`; precision SyncTeX line jump via single click or double click on the PDF preview.

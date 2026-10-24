@@ -17,7 +17,7 @@ The project is structured as a cross-platform native desktop application powered
 - **Cross-Platform PATH Resolution:** GUI applications launched on macOS do not inherit terminal shell PATH. A native Rust command builder (`create_system_command`) augments execution PATH on macOS (`/Library/TeX/texbin`, `/opt/homebrew/bin`, `/usr/local/bin`, `/usr/bin`) and Linux (`/usr/local/bin`, `/usr/bin`).
 - **Dynamic Pandoc Converter:** Standalone Pandoc binary (version 3.12.1) bundled into application resources, converting LaTeX files directly into Microsoft Word (`.docx`) format with native editable Equation Editor (OMML) objects. `get_pandoc_path()` dynamically discovers `pandoc.exe` on Windows and `pandoc` on macOS and Linux across resource directories, app bundles (`.app/Contents/Resources`), and system PATH.
 - **Cross-Platform Binary Setup:** `setup-pandoc.js` downloads and extracts platform-specific binaries (`darwin` arm64/x64, `linux` amd64/arm64, `win32` x64) using system `tar` and enforces Unix executable permissions (`0o755`).
-- **Automated CI/CD Pipeline:** Multi-runner GitHub Actions workflow (`.github/workflows/release.yml`) builds `.dmg` for macOS, `.deb` and `.AppImage` for Linux, and `.exe` for Windows.
+- **Automated CI/CD Pipeline:** Multi-runner GitHub Actions workflow (`.github/workflows/release.yml`) builds `.dmg` for macOS, as well as `.deb`, `.AppImage`, and `.rpm` for Linux on tag push or manual workflow dispatch.
 
 > **Status: Outdated** (2026-10-24)
 > The Express/Node.js web server (`server.js`) and web distribution package have been completely removed from the project in favor of the unified Tauri native desktop architecture.
@@ -32,12 +32,12 @@ The project is structured as a cross-platform native desktop application powered
 ## Prerequisites & Installation
 
 - **System Requirement:** Requires a local TeX distribution installed on the host system to supply `pdflatex` and `synctex` executables in PATH:
-  - **Windows:** **MiKTeX** (recommended) or **TeX Live**.
-  - **macOS:** **MacTeX** (`brew install --cask mactex-no-gui`) or **BasicTeX**.
-  - **Linux:** **TeX Live** (`sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries`).
+  - **Windows:** **MiKTeX** (`winget install MiKTeX.MiKTeX`) or **TeX Live**. Run installer setup wizard. Windows SmartScreen info notice bypass via "More info" -> "Run anyway".
+  - **macOS:** **MacTeX** (`brew install --cask mactex-no-gui`) or **BasicTeX** (`brew install --cask basictex`). Mount DMG, drag to `/Applications`. Gatekeeper first-launch bypass via Right-click -> Open -> Open.
+  - **Linux:** **TeX Live** (`sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries` or Fedora `sudo dnf install texlive-scheme-basic texlive-synctex`). Standalone AppImage execution (`chmod +x LaTeX.Editor_1.0.0_amd64.AppImage`), Debian install (`sudo dpkg -i LaTeX.Editor_1.0.0_amd64.deb`), or RPM install (`sudo dnf install ./LaTeX.Editor-1.0.0-1.x86_64.rpm`).
 - **Distribution:** Hosted on GitHub at [Bandetheighteen/ltex-editor](https://github.com/Bandetheighteen/ltex-editor). Multi-platform releases publish installers for:
   - Windows: `LaTeX-Editor-Native-Setup.exe` (26.6 MB)
-  - macOS: `LaTeX.Editor_1.0.0_aarch64.dmg` (45.6 MB)
+  - macOS: `LaTeX.Editor_1.0.0_aarch64.dmg` (45.6 MB) and `LaTeX.Editor_aarch64.app.tar.gz` (45.5 MB)
   - Linux: `LaTeX.Editor_1.0.0_amd64.deb` (38.7 MB), `LaTeX.Editor_1.0.0_amd64.AppImage` (111.8 MB), and `LaTeX.Editor-1.0.0-1.x86_64.rpm` (38.7 MB).
 
 ## Authorship & Legal Licensing
