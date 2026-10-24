@@ -434,3 +434,70 @@ body.is-electron .header {
     color: var(--accent-blue);
     flex-shrink: 0;
 }
+
+/* ===================================================
+   Auto-Compile Toggle Switch Button
+=================================================== */
+.btn-toggle {
+    background-color: var(--bg-surface-elevated);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    padding: 6px 12px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.btn-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+.toggle-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #6b7280;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-toggle.is-active {
+    background-color: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #10b981;
+}
+
+.btn-toggle.is-active .toggle-dot {
+    background-color: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.btn-toggle.is-active strong {
+    color: #10b981;
+}
+
+/* ===================================================
+   SyncTeX Luminous Jump Flash
+=================================================== */
+.synctex-jump-flash {
+    background: rgba(16, 185, 129, 0.32) !important;
+    animation: synctexPulse 1.8s ease-out forwards;
+}
+
+@keyframes synctexPulse {
+    0% {
+        background: rgba(16, 185, 129, 0.5) !important;
+    }
+    40% {
+        background: rgba(16, 185, 129, 0.28) !important;
+    }
+    100% {
+        background: transparent !important;
+    }
+}

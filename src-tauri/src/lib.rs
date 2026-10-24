@@ -56,6 +56,31 @@ pub struct SyncTexResponse {
     line: Option<u32>,
 }
 
+fn query_synctex_point(page: u32, x: f32, y: f32, pdf_path: &std::path::Path) -> Option<u32> {
+    let output = Command::new("synctex")
+        .arg("edit")
+        .arg("-o")
+        .arg(format!("{}:{}:{}:{}", page, x, y, pdf_path.display()))
+        .output()
+        .ok()?;
+
+    if !output.status.success() {
+        return None;
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    for line in stdout.lines() {
+        if line.starts_with("Line:") {
+            if let Some(num_str) = line.split(':').nth(1) {
+                if let Ok(num) = num_str.trim().parse::<u32>() {
+                    return Some(num);
+                }
+            }
+        }
+    }
+    None
+}
+
 #[tauri::command]
 async fn synctex(page: u32, x: f32, y: f32) -> Result<SyncTexResponse, String> {
     let dir = get_workspace_dir().map_err(|e| e.to_string())?;
@@ -65,27 +90,15 @@ async fn synctex(page: u32, x: f32, y: f32) -> Result<SyncTexResponse, String> {
         return Ok(SyncTexResponse { line: None });
     }
 
-    let output = Command::new("synctex")
-        .arg("edit")
-        .arg("-o")
-        .arg(format!("{}:{}:{}:{}", page, x, y, pdf_path.display()))
-        .output()
-        .map_err(|e| format!("Failed to spawn synctex: {}", e))?;
-
-    if !output.status.success() {
-        return Ok(SyncTexResponse { line: None });
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
+    // Check exact point first, then small vertical offsets (+-4, +-8, +-14) in case of line spacing/margins
+    let y_offsets = [0.0, -4.0, 4.0, -8.0, 8.0, -14.0, 14.0];
     let mut line_num = None;
-    for line in stdout.lines() {
-        if line.starts_with("Line:") {
-            if let Some(num_str) = line.split(':').nth(1) {
-                if let Ok(num) = num_str.trim().parse::<u32>() {
-                    line_num = Some(num);
-                    break;
-                }
-            }
+
+    for &dy in &y_offsets {
+        let test_y = (y + dy).max(0.0);
+        if let Some(l) = query_synctex_point(page, x, test_y, &pdf_path) {
+            line_num = Some(l);
+            break;
         }
     }
 
