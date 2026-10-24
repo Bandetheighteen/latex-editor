@@ -18,9 +18,6 @@ jobs:
           - platform: 'macos-latest'
             target: 'aarch64-apple-darwin'
             args: '--target aarch64-apple-darwin'
-          - platform: 'macos-13'
-            target: 'x86_64-apple-darwin'
-            args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
             target: ''
             args: ''
@@ -34,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install Rust stable (macOS with target)
@@ -53,16 +50,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf \
-            libssl-dev \
             build-essential \
             curl \
             wget \
             file \
             libxdo-dev \
-            libayatana-appindicator3-dev
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
 
       - name: Install Node dependencies
         run: npm install
@@ -83,7 +78,7 @@ jobs:
             100% offline, native LaTeX editing with CodeMirror, PDF.js, precision bidirectional SyncTeX, and Microsoft Word (.docx) export powered by Tauri v2 and Rust.
             
             #### Downloads
-            - **macOS**: `LaTeX-Editor.dmg` (Apple Silicon & Intel)
+            - **macOS**: `LaTeX-Editor.dmg` (Apple Silicon M-Series)
             - **Linux**: `.deb` (Debian/Ubuntu) and `.AppImage` (Universal Linux)
             - **Windows**: `LaTeX-Editor-Native-Setup.exe` (Available under Release v1.0.0)
             
