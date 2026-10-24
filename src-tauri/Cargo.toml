@@ -2,9 +2,9 @@
 name = "app"
 version = "0.1.0"
 description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+authors = ["Shounak Saha"]
+license = "MIT"
+repository = "https://github.com/Bandetheighteen/ltex-editor"
 edition = "2024"
 rust-version = "1.90"
 

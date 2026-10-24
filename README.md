@@ -2,52 +2,104 @@
   <img src="assets/banner.jpg" alt="LaTeX Editor Banner" width="800"/>
   
   # LaTeX Editor
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+  [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](#)
+  [![Release](https://img.shields.io/github/v/release/Bandetheighteen/ltex-editor?color=green)](https://github.com/Bandetheighteen/ltex-editor/releases)
 </div>
 
-LaTeX is mandatory for most PhD scholars and researchers. While tools like Overleaf are standard, they require a constant internet connection. Working offline with them is difficult and often frustrating. I built this app for fellow researchers who need a reliable, fully offline native LaTeX editor.
+LaTeX is mandatory for PhD scholars, academics, and researchers worldwide. While web tools like Overleaf are widely used, they require a persistent internet connection, and working offline with them can be frustrating and unreliable. 
 
-I have no background in software development. This entire project was vibe-coded into existence.
+This application was created for research co-fellows and students who need a high-performance, crash-free native LaTeX editor that operates **100% offline** on their desktop.
 
-## What is in the repository
+---
 
-This repository contains the standalone native desktop app.
+## 🚀 How to Install & Run
 
-### The Native Desktop App
-A lightweight, high-performance desktop application built with Tauri v2 and Rust. It handles memory safely, eliminates the crashes common in heavy editors, and runs completely offline on your computer.
+Running LaTeX on your computer requires a TeX engine to convert raw code into typesetting. Follow these two quick steps:
 
-## Installation
+### Step 1: Install a TeX Distribution (Prerequisite)
 
-### Direct Download
-1. Head over to the [`release/`](release/) folder in this repository.
-2. Download and run **`LaTeX-Editor-Native-Setup.exe`**.
-3. Follow the setup wizard to install the app on your computer.
+Before launching LaTeX Editor, you must have a local TeX distribution installed on your laptop so the editor can compile your `.tex` files offline.
 
-*Note: You need a local TeX distribution (such as MiKTeX or TeX Live) installed on your system so the editor can compile your LaTeX documents.*
+- **Recommended**: **[MiKTeX](https://miktex.org/download)** (This software was built, configured, and tested upon MiKTeX).
+- **Alternative**: **[TeX Live](https://tug.org/texlive/)**.
 
-### Build from Source
-If you prefer to build the app from source:
+> **Quick Windows Install via Terminal:**
+> You can install MiKTeX in one command using Windows Package Manager:
+> ```powershell
+> winget install MiKTeX.MiKTeX
+> ```
+> *(After installing, ensure MiKTeX finishes its initial setup wizard so `pdflatex` is available in your system PATH).*
+
+---
+
+### Step 2: Download & Install LaTeX Editor
+
+Once MiKTeX (or TeX Live) is installed:
+
+1. Go to the **[Releases](https://github.com/Bandetheighteen/ltex-editor/releases)** section of this GitHub repository.
+2. Download the latest installer: **`LaTeX-Editor-Native-Setup.exe`**.
+3. Run the setup wizard to install the app on your computer.
+4. Launch **LaTeX Editor** directly from your Start Menu or Desktop!
+
+---
+
+### Alternative: Build from Source
+
+If you prefer building and running the project from source:
 
 ```bash
 git clone https://github.com/Bandetheighteen/ltex-editor.git
 cd ltex-editor
 npm install
 
-# Run the native app in development mode
+# Download offline vendor and pandoc binaries
+npm run setup
+
+# Run the desktop app in development mode
 npm run dev
 
-# Or package the installer
+# Package the release installer
 npm run build
 ```
 
-## How It Works
+---
 
-- **Offline PDF Preview:** Uses an embedded, offline PDF.js engine for instant rendering without web requests.
-- **Bidirectional SyncTeX:** Double-click anywhere on the rendered PDF preview, and the editor jumps straight to that exact line in your LaTeX source.
-- **Runaway Process Safeguard:** Enforces a 10-second compilation timeout. If code causes an infinite LaTeX loop, the background `pdflatex` process is cleanly terminated to protect your CPU.
-- **Export to PDF & Word (.docx):** A unified export dropdown menu allows you to export to PDF or Microsoft Word (`.docx`). Equations are automatically converted into native, fully editable Word equations (OMML) powered by a bundled Pandoc engine.
-- **Native File Dialogs:** Seamlessly exports files directly using native Windows file dialogs.
+## ✨ Key Features
 
-## How It Was Built
+- **100% Offline Workflow:** Zero cloud dependence. Work seamlessly on airplanes, remote field sites, or anywhere without an internet connection.
+- **Precision Bidirectional SyncTeX:** Single-click or double-click anywhere on the rendered PDF preview to jump instantly to that exact line in your LaTeX source code, complete with visual highlight pulsing.
+- **Auto-Compilation Toggle:** Control your compilation flow with a header toggle switch (`ON` / `OFF`). Keep it off while drafting, and compile on demand (`Ctrl+S` or `Ctrl+Enter`) without unexpected interruptions.
+- **Export to PDF & Microsoft Word (`.docx`):** Built-in unified export menu. Equations are automatically translated into native, fully editable Microsoft Word Equation Editor (OMML) objects using a bundled Pandoc engine.
+- **Runaway Process Safeguard:** Strict 10-second compilation timeouts cleanly terminate stuck background loops without crashing the editor or freezing your CPU.
+- **Native Windows Integration:** Uses native Windows File Explorer dialogs for saving files and exports.
 
-- **Frontend:** CodeMirror for the code editor, Split.js for adjustable split panes, and PDF.js for canvas rendering, packaged with offline assets.
-- **Backend:** Tauri v2 and Rust handle local child processes (`pdflatex`, `synctex`), memory safety, IPC communication, and file system operations.
+---
+
+## 🛠️ Architecture
+
+- **Frontend:** CodeMirror 5 (with active line spotlighting and syntax highlighting), PDF.js (offline canvas rendering), and Split.js (smooth resizable dual-pane layout).
+- **Backend:** Built with **Tauri v2** and **Rust**. Rust manages child process execution (`pdflatex`, `synctex`), memory safety, IPC communication, and native Windows Win32/COM file dialogs.
+- **Converter:** Embedded, bundled standalone Pandoc binary for native `.docx` export without external dependencies.
+
+---
+
+## 👨‍💻 Author
+
+This project was built and designed by **Shounak Saha** (*S-H-O-U-N-A-K  S-A-H-A*).
+
+> *"I am a non-coder with no formal background in software engineering. I hardcoded and vibe-coded this entire application from the ground up to solve the real everyday frustrations my research peers and I faced while writing LaTeX papers offline.*
+> 
+> *I warmly welcome open-source developers, researchers, and LaTeX enthusiasts to collaborate, submit pull requests, open issues, and help improve this tool together!"*
+
+- **GitHub:** [@Bandetheighteen](https://github.com/Bandetheighteen)
+- **Portfolio / Connect:** [linktr.ee/shounaksaha2000b](https://linktr.ee/shounaksaha2000b)
+
+---
+
+## 📄 License
+
+This project is licensed under the **[MIT License](LICENSE)** &copy; 2026 **Shounak Saha**.
+
+You are free to use, modify, distribute, and collaborate on this project, provided that the original copyright and permission notice are preserved.
