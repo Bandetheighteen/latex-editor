@@ -65,16 +65,46 @@ And Euler's identity:
     });
     editor.setValue(savedDraft);
 
-    // Save draft automatically on typing and debounce compilation
+    // Auto-Compile State (Default to OFF per user preference)
+    let isAutoCompile = localStorage.getItem('auto_compile_enabled') === 'true';
+    const autoCompileToggle = document.getElementById('auto-compile-toggle');
+    const autoCompileLabel = document.getElementById('auto-compile-label');
+
+    function updateAutoCompileUI() {
+        if (!autoCompileToggle || !autoCompileLabel) return;
+        if (isAutoCompile) {
+            autoCompileToggle.classList.add('is-active');
+            autoCompileLabel.textContent = 'ON';
+        } else {
+            autoCompileToggle.classList.remove('is-active');
+            autoCompileLabel.textContent = 'OFF';
+        }
+    }
+    updateAutoCompileUI();
+
+    if (autoCompileToggle) {
+        autoCompileToggle.addEventListener('click', () => {
+            isAutoCompile = !isAutoCompile;
+            localStorage.setItem('auto_compile_enabled', isAutoCompile.toString());
+            updateAutoCompileUI();
+            if (isAutoCompile) {
+                compileLatex();
+            }
+        });
+    }
+
+    // Save draft automatically on typing; compile ONLY if auto-compile is toggled ON
     let compileTimeout;
     editor.on('change', () => {
         localStorage.setItem('latex_source_code', editor.getValue());
         setStatus('Uncompiled Changes', 'status-ready');
         
         clearTimeout(compileTimeout);
-        compileTimeout = setTimeout(() => {
-            compileLatex();
-        }, 1000);
+        if (isAutoCompile) {
+            compileTimeout = setTimeout(() => {
+                compileLatex();
+            }, 1200);
+        }
     });
 
     // 4. Configure PDF.js (Offline Local Worker)
@@ -147,29 +177,48 @@ And Euler's identity:
                 };
                 await page.render(renderContext).promise;
 
-                // SyncTeX: Double-click to jump to code
-                canvas.addEventListener('dblclick', async (e) => {
+                // SyncTeX: Click or Double-click on PDF to jump accurately to code
+                const triggerSyncTexJump = async (e) => {
                     const rect = canvas.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
+                    // Account for any DPI scaling or CSS sizing differences
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    const canvasX = (e.clientX - rect.left) * scaleX;
+                    const canvasY = (e.clientY - rect.top) * scaleY;
 
-                    // Convert CSS pixel coordinates to PDF point coordinates (72 dpi)
-                    const pdfX = x / currentScale;
-                    const pdfY = y / currentScale;
+                    // Convert to 72 dpi PDF points from top-left corner
+                    const pdfX = canvasX / currentScale;
+                    const pdfY = canvasY / currentScale;
 
                     try {
                         const data = await window.BackendAdapter.invokeSyncTeX(pageNum, pdfX, pdfY);
 
                         if (data && data.line) {
                             const targetLine = data.line - 1;
-                            editor.setCursor({ line: targetLine, ch: 0 });
-                            editor.scrollIntoView({ line: targetLine, ch: 0 }, 150);
+                            
+                            // Highlight the line selection
+                            const lineLen = editor.getLine(targetLine) ? editor.getLine(targetLine).length : 0;
+                            editor.setSelection({ line: targetLine, ch: 0 }, { line: targetLine, ch: lineLen });
+                            
+                            // Center the line smoothly in the editor viewport
+                            const h = editor.getScrollInfo().clientHeight;
+                            const coords = editor.charCoords({ line: targetLine, ch: 0 }, "local");
+                            editor.scrollTo(null, Math.max(0, coords.top - h / 2));
                             editor.focus();
+
+                            // Pulse visual highlight flash
+                            const lineHandle = editor.addLineClass(targetLine, 'background', 'synctex-jump-flash');
+                            setTimeout(() => {
+                                editor.removeLineClass(lineHandle, 'background', 'synctex-jump-flash');
+                            }, 1800);
                         }
                     } catch (err) {
                         console.error('SyncTeX jump request failed:', err);
                     }
-                });
+                };
+
+                canvas.addEventListener('click', triggerSyncTexJump);
+                canvas.addEventListener('dblclick', triggerSyncTexJump);
 
                 pdfViewer.appendChild(canvas);
             }
