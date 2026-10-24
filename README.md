@@ -87,7 +87,7 @@ npm run build
 
 ## 👨‍💻 Author
 
-This project was built and designed by **Shounak Saha** (*S-H-O-U-N-A-K  S-A-H-A*).
+This project was built and designed by **Shounak Saha**.
 
 > *"I am a non-coder with no formal background in software engineering. I hardcoded and vibe-coded this entire application from the ground up to solve the real everyday frustrations my research peers and I faced while writing LaTeX papers offline.*
 > 
