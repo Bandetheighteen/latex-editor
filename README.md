@@ -4,7 +4,7 @@
   # LaTeX Editor
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
-  [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](#)
+  [![Platform: Windows | macOS | Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
   [![Release](https://img.shields.io/github/v/release/Bandetheighteen/ltex-editor?color=green)](https://github.com/Bandetheighteen/ltex-editor/releases)
 </div>
 
@@ -20,28 +20,42 @@ Running LaTeX on your computer requires a TeX engine to convert raw code into ty
 
 ### Step 1: Install a TeX Distribution (Prerequisite)
 
-Before launching LaTeX Editor, you must have a local TeX distribution installed on your laptop so the editor can compile your `.tex` files offline.
+Before launching LaTeX Editor, you must have a local TeX distribution installed on your computer so the editor can compile your `.tex` files offline.
 
-- **Recommended**: **[MiKTeX](https://miktex.org/download)** (This software was built, configured, and tested upon MiKTeX).
-- **Alternative**: **[TeX Live](https://tug.org/texlive/)**.
+- **Windows**: Install **[MiKTeX](https://miktex.org/download)** (recommended) or **[TeX Live](https://tug.org/texlive/)**.
+  ```powershell
+  winget install MiKTeX.MiKTeX
+  ```
+  *(After installing, ensure MiKTeX finishes its initial setup wizard so `pdflatex` is in PATH).*
 
-> **Quick Windows Install via Terminal:**
-> You can install MiKTeX in one command using Windows Package Manager:
-> ```powershell
-> winget install MiKTeX.MiKTeX
-> ```
-> *(After installing, ensure MiKTeX finishes its initial setup wizard so `pdflatex` is available in your system PATH).*
+- **macOS**: Install **[MacTeX](https://tug.org/mactex/)** via Homebrew:
+  ```bash
+  brew install --cask mactex-no-gui
+  # Or lightweight BasicTeX:
+  # brew install --cask basictex
+  ```
+
+- **Linux (Ubuntu / Debian / Fedora)**: Install TeX Live via your package manager:
+  ```bash
+  # Ubuntu / Debian / Pop!_OS:
+  sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries
+
+  # Fedora / RHEL:
+  sudo dnf install texlive-scheme-basic texlive-synctex
+  ```
 
 ---
 
 ### Step 2: Download & Install LaTeX Editor
 
-Once MiKTeX (or TeX Live) is installed:
+Once a TeX distribution is installed:
 
 1. Go to the **[Releases](https://github.com/Bandetheighteen/ltex-editor/releases)** section of this GitHub repository.
-2. Download the latest installer: **`LaTeX-Editor-Native-Setup.exe`**.
-3. Run the setup wizard to install the app on your computer.
-4. Launch **LaTeX Editor** directly from your Start Menu or Desktop!
+2. Download the installer for your operating system:
+   - **Windows**: `LaTeX-Editor-Native-Setup.exe`
+   - **macOS**: `LaTeX-Editor.dmg` (mount DMG and drag to `/Applications`)
+   - **Linux**: `.deb` package (`sudo dpkg -i ...`) or standalone `.AppImage` (`chmod +x` and run)
+3. Launch **LaTeX Editor** directly from your Applications menu or Desktop!
 
 ---
 

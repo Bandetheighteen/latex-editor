@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "LaTeX Editor",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "identifier": "com.latex.editor",
   "build": {
     "frontendDist": "../public"
@@ -11,8 +11,8 @@
     "windows": [
       {
         "title": "LaTeX Editor",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 800,
         "resizable": true,
         "fullscreen": false
       }
@@ -24,14 +24,30 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "category": "Education",
+    "copyright": "Copyright © 2026 Shounak Saha",
+    "shortDescription": "100% offline native LaTeX Editor",
+    "longDescription": "A lightweight, crash-free 100% offline native desktop LaTeX editor built with Tauri and Rust.",
     "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
       "icons/icon.ico"
     ],
     "resources": [
-      "binaries/pandoc.exe"
+      "binaries/*"
     ],
-    "android": {
-      "debugApplicationIdSuffix": ".debug"
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    },
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0 | libwebkit2gtk-4.0-37",
+          "libgtk-3-0"
+        ]
+      }
     }
   }
 }

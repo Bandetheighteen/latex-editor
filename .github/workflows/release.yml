@@ -1,0 +1,93 @@
+name: Release Multi-Platform Desktop App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version tag (e.g. v1.0.1)'
+        required: false
+        default: 'v1.0.1'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-13'
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || matrix.platform == 'macos-13' && 'x86_64-apple-darwin' || '' }}
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libayatana-appindicator3-dev
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Run setup for offline vendor assets and Pandoc
+        run: npm run setup
+
+      - name: Build Desktop Application and Create Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name != 'main' && github.ref_name != 'master' && github.ref_name || inputs.version }}
+          releaseName: 'LaTeX Editor ${{ github.ref_name != 'main' && github.ref_name != 'master' && github.ref_name || inputs.version }}'
+          releaseBody: |
+            ### LaTeX Editor Native Multi-Platform Release
+            
+            100% offline, native LaTeX editing with CodeMirror, PDF.js, precision bidirectional SyncTeX, and Microsoft Word (.docx) export powered by Tauri v2 and Rust.
+            
+            #### Downloads
+            - **Windows**: `LaTeX-Editor-Native-Setup.exe` / `.msi`
+            - **macOS**: `LaTeX-Editor.dmg` (Universal / Apple Silicon / Intel)
+            - **Linux**: `.deb` (Debian/Ubuntu) and `.AppImage` (Universal Linux)
+            
+            #### System Prerequisites
+            - **Windows**: Install [MiKTeX](https://miktex.org) or TeX Live.
+            - **macOS**: Install [MacTeX](https://tug.org/mactex/) (`brew install --cask mactex-no-gui`).
+            - **Linux**: Install TeX Live (`sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries`).
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}

@@ -11,6 +11,24 @@ fn get_workspace_dir() -> std::io::Result<PathBuf> {
     Ok(dir)
 }
 
+fn create_system_command<P: AsRef<std::ffi::OsStr>>(bin: P) -> Command {
+    #[allow(unused_mut)]
+    let mut cmd = Command::new(bin);
+    #[cfg(target_os = "macos")]
+    {
+        let current_path = std::env::var("PATH").unwrap_or_default();
+        let mac_tex_paths = "/Library/TeX/texbin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
+        cmd.env("PATH", format!("{}:{}", mac_tex_paths, current_path));
+    }
+    #[cfg(target_os = "linux")]
+    {
+        let current_path = std::env::var("PATH").unwrap_or_default();
+        let linux_paths = "/usr/local/bin:/usr/bin:/bin";
+        cmd.env("PATH", format!("{}:{}", linux_paths, current_path));
+    }
+    cmd
+}
+
 #[derive(Serialize)]
 pub struct CompileResponse {
     pdf_buffer: Option<Vec<u8>>,
@@ -25,7 +43,7 @@ async fn compile_latex(code: String) -> Result<CompileResponse, String> {
     
     fs::write(&tex_path, code).map_err(|e| e.to_string())?;
 
-    let output = Command::new("pdflatex")
+    let output = create_system_command("pdflatex")
         .arg("-synctex=1")
         .arg("-interaction=nonstopmode")
         .arg("-halt-on-error")
@@ -57,7 +75,7 @@ pub struct SyncTexResponse {
 }
 
 fn query_synctex_point(page: u32, x: f32, y: f32, pdf_path: &std::path::Path) -> Option<u32> {
-    let output = Command::new("synctex")
+    let output = create_system_command("synctex")
         .arg("edit")
         .arg("-o")
         .arg(format!("{}:{}:{}:{}", page, x, y, pdf_path.display()))
@@ -128,24 +146,31 @@ fn save_pdf() -> Result<bool, String> {
 }
 
 fn get_pandoc_path() -> PathBuf {
+    let bin_name = if cfg!(windows) { "pandoc.exe" } else { "pandoc" };
     if let Ok(exe_path) = std::env::current_exe() {
         if let Some(parent) = exe_path.parent() {
-            let p1 = parent.join("resources").join("binaries").join("pandoc.exe");
-            if p1.exists() { return p1; }
-            let p2 = parent.join("resources").join("pandoc.exe");
-            if p2.exists() { return p2; }
-            let p3 = parent.join("binaries").join("pandoc.exe");
-            if p3.exists() { return p3; }
-            let p4 = parent.join("pandoc.exe");
-            if p4.exists() { return p4; }
+            let candidates = [
+                parent.join("resources").join("binaries").join(bin_name),
+                parent.join("resources").join(bin_name),
+                parent.join("../Resources").join("binaries").join(bin_name),
+                parent.join("../Resources").join(bin_name),
+                parent.join("binaries").join(bin_name),
+                parent.join(bin_name),
+            ];
+            for p in &candidates {
+                if p.exists() { return p.clone(); }
+            }
         }
     }
-    let dev_path = PathBuf::from("src-tauri/binaries/pandoc.exe");
-    if dev_path.exists() { return dev_path; }
-    let dev_path2 = PathBuf::from("binaries/pandoc.exe");
-    if dev_path2.exists() { return dev_path2; }
+    let dev_candidates = [
+        PathBuf::from(format!("src-tauri/binaries/{}", bin_name)),
+        PathBuf::from(format!("binaries/{}", bin_name)),
+    ];
+    for p in &dev_candidates {
+        if p.exists() { return p.clone(); }
+    }
 
-    PathBuf::from("pandoc")
+    PathBuf::from(bin_name)
 }
 
 #[tauri::command]
@@ -158,7 +183,7 @@ fn save_docx(code: String) -> Result<bool, String> {
 
     let pandoc_cmd = get_pandoc_path();
 
-    let output = Command::new(&pandoc_cmd)
+    let output = create_system_command(&pandoc_cmd)
         .arg("-s")
         .arg(&tex_path)
         .arg("-o")
