@@ -42,6 +42,20 @@ class BackendAdapter {
             return false;
         }
     }
+
+    static async invokeSaveDocx(latexCode) {
+        if (!this.isTauri) {
+            alert('Saving Word document requires the native desktop application.');
+            return false;
+        }
+        try {
+            return await window.__TAURI__.core.invoke('save_docx', { code: latexCode });
+        } catch (err) {
+            console.error("Tauri save DOCX error:", err);
+            alert("Failed to export Word document: " + err);
+            return false;
+        }
+    }
 }
 
 window.BackendAdapter = BackendAdapter;

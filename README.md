@@ -44,7 +44,8 @@ npm run build
 - **Offline PDF Preview:** Uses an embedded, offline PDF.js engine for instant rendering without web requests.
 - **Bidirectional SyncTeX:** Double-click anywhere on the rendered PDF preview, and the editor jumps straight to that exact line in your LaTeX source.
 - **Runaway Process Safeguard:** Enforces a 10-second compilation timeout. If code causes an infinite LaTeX loop, the background `pdflatex` process is cleanly terminated to protect your CPU.
-- **Native File Dialogs:** Seamlessly exports compiled PDFs using native Windows file dialogs.
+- **Export to PDF & Word (.docx):** A unified export dropdown menu allows you to export to PDF or Microsoft Word (`.docx`). Equations are automatically converted into native, fully editable Word equations (OMML) powered by a bundled Pandoc engine.
+- **Native File Dialogs:** Seamlessly exports files directly using native Windows file dialogs.
 
 ## How It Was Built
 

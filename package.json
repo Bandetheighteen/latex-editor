@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "High-performance, crash-free offline LaTeX Editor powered by Tauri and Rust",
   "scripts": {
+    "setup": "node setup-vendors.js && node setup-pandoc.js",
     "dev": "tauri dev",
     "build": "tauri build",
     "tauri": "tauri"

@@ -5,3 +5,4 @@ dist/
 *.out
 Brain/
 antigravity-plugin/
+src-tauri/binaries/

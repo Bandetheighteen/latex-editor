@@ -211,14 +211,50 @@ And Euler's identity:
         }
     }
 
-    // 9. Export PDF Handler
-    document.getElementById('export-btn').addEventListener('click', async () => {
-        if (!currentPdfUrl && !BackendAdapter.isTauri) {
-            alert('Please compile the document first to export.');
-            return;
+    // 9. Export Dropdown Handlers
+    const exportDropdown = document.getElementById('export-dropdown');
+    const exportMenuBtn = document.getElementById('export-menu-btn');
+    const exportPdfItem = document.getElementById('export-pdf-item');
+    const exportDocxItem = document.getElementById('export-docx-item');
+
+    if (exportMenuBtn) {
+        exportMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            exportDropdown.classList.toggle('open');
+        });
+    }
+
+    document.addEventListener('click', () => {
+        if (exportDropdown) {
+            exportDropdown.classList.remove('open');
         }
-        await BackendAdapter.invokeSavePdf(currentPdfUrl);
     });
+
+    if (exportPdfItem) {
+        exportPdfItem.addEventListener('click', async () => {
+            if (exportDropdown) exportDropdown.classList.remove('open');
+            if (!currentPdfUrl && !BackendAdapter.isTauri) {
+                alert('Please compile the document first to export.');
+                return;
+            }
+            await BackendAdapter.invokeSavePdf(currentPdfUrl);
+        });
+    }
+
+    if (exportDocxItem) {
+        exportDocxItem.addEventListener('click', async () => {
+            if (exportDropdown) exportDropdown.classList.remove('open');
+            const code = editor.getValue();
+            setStatus('Exporting Word...', 'status-compiling');
+            const success = await BackendAdapter.invokeSaveDocx(code);
+            if (success) {
+                setStatus('Exported Word', 'status-success');
+                setTimeout(() => setStatus('Ready', 'status-ready'), 3000);
+            } else {
+                setStatus('Ready', 'status-ready');
+            }
+        });
+    }
 
     // 10. Action Buttons
     document.getElementById('compile-btn').addEventListener('click', compileLatex);

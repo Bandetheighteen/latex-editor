@@ -114,10 +114,67 @@ fn save_pdf() -> Result<bool, String> {
     }
 }
 
+fn get_pandoc_path() -> PathBuf {
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(parent) = exe_path.parent() {
+            let p1 = parent.join("resources").join("binaries").join("pandoc.exe");
+            if p1.exists() { return p1; }
+            let p2 = parent.join("resources").join("pandoc.exe");
+            if p2.exists() { return p2; }
+            let p3 = parent.join("binaries").join("pandoc.exe");
+            if p3.exists() { return p3; }
+            let p4 = parent.join("pandoc.exe");
+            if p4.exists() { return p4; }
+        }
+    }
+    let dev_path = PathBuf::from("src-tauri/binaries/pandoc.exe");
+    if dev_path.exists() { return dev_path; }
+    let dev_path2 = PathBuf::from("binaries/pandoc.exe");
+    if dev_path2.exists() { return dev_path2; }
+
+    PathBuf::from("pandoc")
+}
+
+#[tauri::command]
+fn save_docx(code: String) -> Result<bool, String> {
+    let dir = get_workspace_dir().map_err(|e| e.to_string())?;
+    let tex_path = dir.join("document.tex");
+    let docx_path = dir.join("document.docx");
+
+    fs::write(&tex_path, &code).map_err(|e| e.to_string())?;
+
+    let pandoc_cmd = get_pandoc_path();
+
+    let output = Command::new(&pandoc_cmd)
+        .arg("-s")
+        .arg(&tex_path)
+        .arg("-o")
+        .arg(&docx_path)
+        .output()
+        .map_err(|e| format!("Failed to spawn pandoc ({:?}): {}", pandoc_cmd, e))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("Pandoc conversion failed: {}", stderr));
+    }
+
+    if let Some(target_path) = tinyfiledialogs::save_file_dialog_with_filter(
+        "Save Word Document",
+        "document.docx",
+        &["*.docx"],
+        "Word Document (*.docx)"
+    ) {
+        fs::copy(&docx_path, target_path).map_err(|e| e.to_string())?;
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![compile_latex, synctex, save_pdf])
+    .invoke_handler(tauri::generate_handler![compile_latex, synctex, save_pdf, save_docx])
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(

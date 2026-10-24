@@ -370,3 +370,67 @@ html, body {
 body.is-electron .header {
     padding-right: 150px;
 }
+
+/* ===================================================
+   Export Dropdown Menu
+=================================================== */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-chevron {
+    margin-left: 2px;
+    transition: transform 0.2s ease;
+}
+
+.dropdown.open .dropdown-chevron {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 6px;
+    min-width: 190px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 1000;
+}
+
+.dropdown.open .dropdown-menu {
+    display: flex;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.dropdown-item svg {
+    color: var(--accent-blue);
+    flex-shrink: 0;
+}
