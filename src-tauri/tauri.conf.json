@@ -4,9 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.latex.editor",
   "build": {
-    "frontendDist": "../public",
-    "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "npm start"
+    "frontendDist": "../public"
   },
   "app": {
     "withGlobalTauri": true,

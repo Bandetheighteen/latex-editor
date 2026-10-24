@@ -10,49 +10,43 @@ I have no background in software development. This entire project was vibe-coded
 
 ## What is in the repository
 
-This repository contains two versions of the editor. Both share the same interface.
+This repository contains the standalone native desktop app.
 
-### The native desktop app
-A standalone executable built with Tauri and Rust. It handles memory safely and avoids the crashes common in other editors. Use this for everyday offline writing on your desktop.
-
-### The web version
-A Node.js and Express server that runs the editor in your web browser. Use this if you prefer keeping your workflow inside a browser or want to run the editor remotely.
+### The Native Desktop App
+A lightweight, high-performance desktop application built with Tauri v2 and Rust. It handles memory safely, eliminates the crashes common in heavy editors, and runs completely offline on your computer.
 
 ## Installation
 
-### Direct download
-1. Go to the `release/` folder in this repository.
-2. For the native app: Download and run `LaTeX-Editor-Native-Setup.exe`.
-3. For the web app: Download `LaTeX-Editor-Web.zip`, extract it, open your terminal in that folder, and run:
-   ```bash
-   npm install
-   npm start
-   ```
-   Then open `http://localhost:3000`.
+### Direct Download
+1. Head over to the [`release/`](release/) folder in this repository.
+2. Download and run **`LaTeX-Editor-Native-Setup.exe`**.
+3. Follow the setup wizard to install the app on your computer.
 
-*You need a local TeX distribution like MiKTeX installed on your computer for the editor to compile documents.*
+*Note: You need a local TeX distribution (such as MiKTeX or TeX Live) installed on your system so the editor can compile your LaTeX documents.*
 
-### Build from source
+### Build from Source
+If you prefer to build the app from source:
+
 ```bash
 git clone https://github.com/Bandetheighteen/ltex-editor.git
 cd ltex-editor
 npm install
 
-# Start the web server
-npm start
+# Run the native app in development mode
+npm run dev
 
-# Or run the native app in development mode
-npx tauri dev
+# Or package the installer
+npm run build
 ```
 
-## How it works
+## How It Works
 
-The editor uses PDF.js for offline PDF rendering. It includes bidirectional SyncTeX support—double-click anywhere on the PDF preview and the editor jumps to the corresponding line of LaTeX code.
+- **Offline PDF Preview:** Uses an embedded, offline PDF.js engine for instant rendering without web requests.
+- **Bidirectional SyncTeX:** Double-click anywhere on the rendered PDF preview, and the editor jumps straight to that exact line in your LaTeX source.
+- **Runaway Process Safeguard:** Enforces a 10-second compilation timeout. If code causes an infinite LaTeX loop, the background `pdflatex` process is cleanly terminated to protect your CPU.
+- **Native File Dialogs:** Seamlessly exports compiled PDFs using native Windows file dialogs.
 
-Both versions enforce a 10-second compilation timeout. If a document gets stuck in a LaTeX loop, the app terminates the background `pdflatex` process to prevent CPU drain. A frontend adapter automatically detects whether you are using the browser or the native app, routing compile commands through HTTP or native IPC accordingly.
+## How It Was Built
 
-## How it was built
-
-The frontend uses standard JavaScript, HTML, and CSS with CodeMirror for the text editor.
-
-The native backend runs on Tauri v2 and Rust. Rust handles the `pdflatex` and `synctex` child processes and manages IPC communication. The web backend uses Node.js and Express to serve the frontend and manage child processes on the server.
+- **Frontend:** CodeMirror for the code editor, Split.js for adjustable split panes, and PDF.js for canvas rendering, packaged with offline assets.
+- **Backend:** Tauri v2 and Rust handle local child processes (`pdflatex`, `synctex`), memory safety, IPC communication, and file system operations.

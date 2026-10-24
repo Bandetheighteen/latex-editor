@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 \\maketitle
 
 \\section{Introduction}
-Welcome to your new \\textbf{Node.js LaTeX Editor}! This application runs completely offline on your computer with instantaneous compilation and zero crashes.
+Welcome to your new \\textbf{Native LaTeX Editor}! This application runs completely offline on your computer with instantaneous compilation and zero crashes.
 
 \\section{Mathematical Formulation}
 LaTeX renders beautiful mathematical formulas effortlessly:
