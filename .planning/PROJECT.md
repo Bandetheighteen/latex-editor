@@ -2,20 +2,20 @@
 
 ## What This Is
 
-A lightweight, crash-free IDE for LaTeX that provides a side-by-side view with LaTeX code on the left and a live PDF preview on the right. The application is distributed in two forms: a highly optimized native desktop app and a web-based version that can be opened in the browser.
+A lightweight, crash-free, 100% offline native desktop LaTeX editor featuring an Apple HIG-inspired dual-pane interface: CodeMirror 5 on the left and a live PDF.js preview on the right. Built with Tauri v2 and Rust, it provides crash-free compilation, precision bidirectional SyncTeX navigation, and native Microsoft Word (`.docx`) export across Windows, macOS, and Linux.
 
 ## Core Value
 
-A stable, bug-free, and high-performance LaTeX editing experience that never shuts down unexpectedly and reliably renders PDFs side-by-side.
+A stable, bug-free, and high-performance offline LaTeX editing experience that never shuts down unexpectedly and reliably renders PDFs side-by-side with zero reliance on cloud services like Overleaf.
 
-## Current State (v1.0)
-The application has successfully migrated to a dual-target architecture:
-1. **Tauri Native App:** High-performance desktop application with native `pdflatex` compilation and SyncTeX support safely executing via Rust child processes.
-2. **Express Web Server:** Robust Node.js backend serving the same frontend with HTTP endpoints for compile and SyncTeX, featuring strict timeout constraints to prevent zombie processes.
-The buggy Electron architecture has been entirely replaced and obsolete files removed.
+## Current State (v1.1)
 
-## Next Milestone Goals
-*(Waiting for new milestone definition)*
+The application has finalized its pure native desktop architecture across three major operating systems:
+1. **Windows (10/11):** Standalone native installer (`.exe`) with `pdflatex`, precision SyncTeX, Win32 save dialogs, and bundled Pandoc Word export.
+2. **macOS (Apple Silicon M-Series):** Native disk image (`.dmg`) and app bundle with automated `/Library/TeX/texbin` and Homebrew PATH resolution.
+3. **Linux (Ubuntu / Debian / Fedora):** Native Debian packages (`.deb`), universal `.AppImage`, and `.rpm` packages with WebKitGTK and TeX Live integration.
+
+*Note: The legacy Express web server (`server.js`) was decommissioned in favor of the unified Tauri v2 native desktop architecture.*
 
 ## Requirements
 
@@ -23,56 +23,37 @@ The buggy Electron architecture has been entirely replaced and obsolete files re
 
 - ✓ Basic side-by-side layout (editor left, PDF right)
 - ✓ Integration with local LaTeX compiler (`pdflatex`)
-- ✓ SyncTeX support (PDF to source mapping)
-- ✓ Re-architect the native app using Tauri (Rust) for performance and stability
-- ✓ Implement a stable Node.js backend for the web version
-- ✓ Fix memory leaks and unexpected shutdowns (eliminated via timeouts & Tauri)
-- ✓ Maintain a single frontend codebase (`public/`) shared across both Native and Web apps
-
-### Active
-
-- [ ] (No active requirements - v1.0 complete)
+- ✓ Precision SyncTeX support (PDF to source mapping with neighborhood vertical probing)
+- ✓ Auto-compilation toggle button (ON/OFF with 1200ms debounce)
+- ✓ Export to Microsoft Word (`.docx`) with native OMML equations via bundled Pandoc
+- ✓ Re-architect native app using Tauri v2 (Rust) for performance and stability
+- ✓ Process timeout safety (strict 10-second child process timeouts)
+- ✓ macOS Apple Silicon support with automated PATH resolution
+- ✓ Linux packaging support (`.deb`, `.AppImage`, `.rpm`)
+- ✓ Automated multi-runner CI/CD GitHub Actions release pipeline
 
 ### Out of Scope
 
-- [Cloud LaTeX compilation] — Compilation will remain local to rely on the user's local MiKTeX/TeX Live installation.
-- [Full IDE features (e.g. Git integration, heavy extensions)] — Keeping it a "small IDE-like setup" as requested, to preserve performance.
+- [Cloud LaTeX compilation] — Compilation will remain local to maintain 100% offline security and zero server costs.
+- [Heavy IDE extensions / bloated plugin ecosystems] — Keeping it focused, lightweight, and fast.
 
-## Context
+## Tech Stack & Architecture
 
-- The initial goal was migrating away from a buggy Node.js/Electron implementation.
-- This was achieved by introducing Tauri (v1.0 milestone) and wrapping compilation processes in strict timeouts.
-- The user's system runs Windows and requires local TeX distribution in PATH.
-
-## Constraints
-
-- **Tech Stack**: Native App: Tauri (Rust). Web Server: Node.js (Express). Frontend: HTML/JS/CSS.
-- **Dependency**: Requires local LaTeX distribution (`pdflatex`, `synctex`) installed on the host system.
+- **Frontend:** CodeMirror 5, PDF.js, Split.js, Vanilla HTML/CSS/JS.
+- **Backend:** Tauri v2, Rust (`std::process::Command`, `tinyfiledialogs`, `serde`).
+- **Export Engine:** Bundled standalone Pandoc binary (version 3.12.1).
+- **Packaging:** GitHub Actions CI/CD matrix (`macos-latest`, `ubuntu-22.04`).
+- **Dependencies:** Requires local TeX distribution (`pdflatex`, `synctex`) installed on the host machine (MiKTeX on Windows, MacTeX on macOS, TeX Live on Linux).
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Use Tauri for Native App | Solves the memory and shutdown issues of Electron while remaining fast | Validated (v1.0) |
-| Express Web Backend | Chosen for web target, adding strict 10s timeouts to prevent hanging | Validated (v1.0) |
-| Shared Frontend | `public` folder is served by both Tauri and the Web backend via a `BackendAdapter` | Validated (v1.0) |
+|---|---|---|
+| Tauri v2 (Rust) | Solves memory leaks and unexpected crashes while delivering high speed | Validated (v1.0) |
+| Pure Native Desktop | Decommissioned Express web server to unify around single desktop binary | Validated (v1.0) |
+| Embedded Pandoc | Bundled standalone Pandoc binary for offline Word (.docx) export with OMML equations | Validated (v1.0) |
+| Automated TeX PATH Discovery | Augmented execution PATH on macOS (`/Library/TeX/texbin`, Homebrew) so GUI apps locate `pdflatex` | Validated (v1.1) |
+| GitHub Actions Release Matrix | Hosted Apple Silicon and Ubuntu cloud runners automatically compile and publish `.dmg`, `.deb`, and `.AppImage` | Validated (v1.1) |
 
 ---
-*Last updated: 2026-10-08 after v1.0 milestone completion*
-
-## Evolution
-
-This document evolves at phase transitions and milestone boundaries.
-
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
-
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
+*Last updated: 2026-10-25 after v1.1.0 multi-platform release*

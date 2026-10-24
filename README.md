@@ -5,97 +5,185 @@
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
   [![Platform: Windows | macOS | Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
-  [![Release](https://img.shields.io/github/v/release/Bandetheighteen/ltex-editor?color=green)](https://github.com/Bandetheighteen/ltex-editor/releases)
+  [![Release: v1.1.0](https://img.shields.io/github/v/release/Bandetheighteen/ltex-editor?color=green)](https://github.com/Bandetheighteen/ltex-editor/releases)
+  [![Offline: 100%](https://img.shields.io/badge/Offline-100%25-orange.svg)](#)
 </div>
 
-LaTeX is mandatory for PhD scholars, academics, and researchers worldwide. While web tools like Overleaf are widely used, they require a persistent internet connection, and working offline with them can be frustrating and unreliable. 
+LaTeX is mandatory for PhD scholars, academics, and researchers worldwide. While web-based tools like Overleaf are popular, they require a constant internet connection, making offline drafting frustrating and precarious.
 
-This application was created for research co-fellows and students who need a high-performance, crash-free native LaTeX editor that operates **100% offline** on their desktop.
+**LaTeX Editor** is a lightweight, crash-free, 100% offline native desktop IDE featuring an Apple HIG-inspired dual-pane interface: a CodeMirror 5 code editor on the left and a live PDF.js preview on the right with precision bidirectional SyncTeX navigation and native Microsoft Word (`.docx`) export.
 
 ---
 
-## 🚀 How to Install & Run
+## 📥 Downloads & Releases
 
-Running LaTeX on your computer requires a TeX engine to convert raw code into typesetting. Follow these two quick steps:
+Get the standalone installer or package for your operating system:
 
-### Step 1: Install a TeX Distribution (Prerequisite)
+| Platform | Architecture | Package Format | Direct Download | Size |
+|---|---|---|---|---|
+| **Windows 10 / 11** | `x86_64` | Native Installer (`.exe`) | [**Download for Windows**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.0.0/LaTeX-Editor-Native-Setup.exe) | 26.6 MB |
+| **macOS (Apple Silicon)** | `aarch64` (M1/M2/M3/M4) | Disk Image (`.dmg`) | [**Download for macOS (.dmg)**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_aarch64.dmg) | 45.6 MB |
+| **macOS (Apple Silicon)** | `aarch64` | App Archive (`.tar.gz`) | [**Download for macOS (.tar.gz)**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_aarch64.app.tar.gz) | 45.5 MB |
+| **Linux (Ubuntu / Debian / Mint)** | `amd64` | Debian Package (`.deb`) | [**Download for Debian/Ubuntu**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_amd64.deb) | 38.7 MB |
+| **Linux (Universal Portable)** | `amd64` | Standalone AppImage (`.AppImage`) | [**Download AppImage**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_amd64.AppImage) | 111.8 MB |
+| **Linux (Fedora / RHEL / openSUSE)** | `x86_64` | Red Hat Package (`.rpm`) | [**Download for Fedora/RHEL**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor-1.0.0-1.x86_64.rpm) | 38.7 MB |
 
-Before launching LaTeX Editor, you must have a local TeX distribution installed on your computer so the editor can compile your `.tex` files offline.
+> 📌 **Looking for all releases and tags?** Visit the **[GitHub Releases Page](https://github.com/Bandetheighteen/ltex-editor/releases)**.
 
-- **Windows**: Install **[MiKTeX](https://miktex.org/download)** (recommended) or **[TeX Live](https://tug.org/texlive/)**.
+---
+
+## 🚀 Installation & Setup Guides
+
+Running LaTeX locally requires a TeX engine installed on your computer to compile `.tex` files into PDF typesetting. Follow the dedicated setup guide for your operating system:
+
+<details open>
+<summary><h3>🪟 Windows Setup Guide</h3></summary>
+
+#### Step 1: Install a TeX Distribution
+Before launching LaTeX Editor, ensure you have **MiKTeX** (recommended) or **TeX Live** installed so `pdflatex` is available on your computer.
+
+- **Option A (Terminal via winget - Fastest):**
   ```powershell
   winget install MiKTeX.MiKTeX
   ```
-  *(After installing, ensure MiKTeX finishes its initial setup wizard so `pdflatex` is in PATH).*
+  *(After the installer finishes, launch MiKTeX from your Start Menu once to let it complete its initial configuration wizard).*
+- **Option B (Manual Download):**
+  Download the Windows installer directly from **[miktex.org/download](https://miktex.org/download)**.
 
-- **macOS**: Install **[MacTeX](https://tug.org/mactex/)** via Homebrew:
+#### Step 2: Install LaTeX Editor
+1. Download **[`LaTeX-Editor-Native-Setup.exe`](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.0.0/LaTeX-Editor-Native-Setup.exe)**.
+2. Double-click the installer and complete the setup wizard.
+3. Launch **LaTeX Editor** directly from your Desktop or Start Menu!
+
+> **Windows SmartScreen Tip:** Because LaTeX Editor is an independent open-source project without an enterprise code-signing certificate, Windows SmartScreen may show an informational notice on first run. Simply click **"More info"** &rarr; **"Run anyway"**.
+</details>
+
+<details open>
+<summary><h3>🍏 macOS Setup Guide</h3></summary>
+
+#### Step 1: Install MacTeX / BasicTeX
+Install MacTeX or lightweight BasicTeX to provide the TeX compilation binaries:
+
+- **Via Homebrew (Recommended):**
   ```bash
+  # Standard MacTeX without GUI utilities:
   brew install --cask mactex-no-gui
+
   # Or lightweight BasicTeX:
-  # brew install --cask basictex
+  brew install --cask basictex
   ```
+- **Manual Download:**
+  Download MacTeX directly from **[tug.org/mactex](https://tug.org/mactex/)**.
 
-- **Linux (Ubuntu / Debian / Fedora)**: Install TeX Live via your package manager:
+#### Step 2: Install LaTeX Editor
+1. Download **[`LaTeX.Editor_1.0.0_aarch64.dmg`](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_aarch64.dmg)**.
+2. Double-click the `.dmg` file to open it.
+3. Drag the **LaTeX Editor** icon into your **Applications** folder.
+4. Launch **LaTeX Editor** from Spotlight or Launchpad!
+
+> **macOS Gatekeeper Tip:** On first launch, macOS may show a prompt: *"Apple cannot check it for malicious software"*. To open:
+> 1. Right-click (or Control-click) on **LaTeX Editor** in `/Applications`.
+> 2. Select **Open**.
+> 3. Click **Open** in the dialog. You only need to do this once.
+</details>
+
+<details open>
+<summary><h3>🐧 Linux Setup Guide</h3></summary>
+
+#### Step 1: Install TeX Live
+Install TeX Live packages using your distribution's package manager:
+
+- **Ubuntu / Debian / Linux Mint / Pop!_OS:**
   ```bash
-  # Ubuntu / Debian / Pop!_OS:
-  sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries
-
-  # Fedora / RHEL:
-  sudo dnf install texlive-scheme-basic texlive-synctex
+  sudo apt update
+  sudo apt install -y texlive-latex-base texlive-latex-extra texlive-binaries
+  ```
+- **Fedora / RHEL / CentOS:**
+  ```bash
+  sudo dnf install -y texlive-scheme-basic texlive-synctex
+  ```
+- **Arch Linux / Manjaro:**
+  ```bash
+  sudo pacman -S --noconfirm texlive-basic texlive-bin
   ```
 
----
+#### Step 2: Install LaTeX Editor
+Choose the package format preferred for your system:
 
-### Step 2: Download & Install LaTeX Editor
-
-Once a TeX distribution is installed:
-
-1. Go to the **[Releases](https://github.com/Bandetheighteen/ltex-editor/releases)** section of this GitHub repository.
-2. Download the installer for your operating system:
-   - **Windows**: `LaTeX-Editor-Native-Setup.exe`
-   - **macOS**: `LaTeX-Editor.dmg` (mount DMG and drag to `/Applications`)
-   - **Linux**: `.deb` package (`sudo dpkg -i ...`) or standalone `.AppImage` (`chmod +x` and run)
-3. Launch **LaTeX Editor** directly from your Applications menu or Desktop!
-
----
-
-### Alternative: Build from Source
-
-If you prefer building and running the project from source:
-
-```bash
-git clone https://github.com/Bandetheighteen/ltex-editor.git
-cd ltex-editor
-npm install
-
-# Download offline vendor and pandoc binaries
-npm run setup
-
-# Run the desktop app in development mode
-npm run dev
-
-# Package the release installer
-npm run build
-```
+- **Option A: Standalone AppImage (Universal - No installation required)**
+  ```bash
+  # 1. Download LaTeX.Editor_1.0.0_amd64.AppImage
+  # 2. Make it executable:
+  chmod +x LaTeX.Editor_1.0.0_amd64.AppImage
+  # 3. Run:
+  ./LaTeX.Editor_1.0.0_amd64.AppImage
+  ```
+- **Option B: Debian / Ubuntu Package (`.deb`)**
+  ```bash
+  sudo dpkg -i LaTeX.Editor_1.0.0_amd64.deb
+  # If any missing system dependencies are reported, run:
+  sudo apt-get install -f
+  ```
+- **Option C: Fedora / RHEL Package (`.rpm`)**
+  ```bash
+  sudo dnf install ./LaTeX.Editor-1.0.0-1.x86_64.rpm
+  ```
+</details>
 
 ---
 
-## ✨ Key Features
+## ⌨️ Global Keyboard Shortcuts
 
-- **100% Offline Workflow:** Zero cloud dependence. Work seamlessly on airplanes, remote field sites, or anywhere without an internet connection.
-- **Precision Bidirectional SyncTeX:** Single-click or double-click anywhere on the rendered PDF preview to jump instantly to that exact line in your LaTeX source code, complete with visual highlight pulsing.
-- **Auto-Compilation Toggle:** Control your compilation flow with a header toggle switch (`ON` / `OFF`). Keep it off while drafting, and compile on demand (`Ctrl+S` or `Ctrl+Enter`) without unexpected interruptions.
-- **Export to PDF & Microsoft Word (`.docx`):** Built-in unified export menu. Equations are automatically translated into native, fully editable Microsoft Word Equation Editor (OMML) objects using a bundled Pandoc engine.
-- **Runaway Process Safeguard:** Strict 10-second compilation timeouts cleanly terminate stuck background loops without crashing the editor or freezing your CPU.
-- **Native Windows Integration:** Uses native Windows File Explorer dialogs for saving files and exports.
+| Shortcut (Windows / Linux) | Shortcut (macOS) | Action |
+|---|---|---|
+| `Ctrl + S` | `Cmd + S` | Compile LaTeX Document |
+| `Ctrl + Enter` | `Cmd + Enter` | Compile LaTeX Document |
+| `Ctrl + =` or `Ctrl + +` | `Cmd + =` or `Cmd + +` | Zoom In PDF Preview |
+| `Ctrl + -` | `Cmd + -` | Zoom Out PDF Preview |
+| `Single Click` / `Double Click` | `Single Click` / `Double Click` | Jump from PDF point to LaTeX Source Line (SyncTeX) |
+
+---
+
+## ✨ Core Features
+
+- **100% Offline Workflow:** Zero reliance on remote servers, internet connections, or subscription clouds like Overleaf. Work anywhere: on airplanes, field sites, or remote locations.
+- **Precision Bidirectional SyncTeX:** Clicking or double-clicking anywhere on the PDF preview resolves coordinate math and high-DPI scaling ratios, jumps to the exact source line in CodeMirror, centers it in the viewport, and pulses it with a luminous green highlight.
+- **Auto-Compilation Toggle:** Dedicated header toggle (`ON` / `OFF`) defaulting to OFF. Draft freely without interruption, and compile on demand (`Ctrl+S` / `Cmd+S`) or enable auto-compilation with a 1200ms debounce.
+- **Unified Export (PDF & Word .docx):** Export directly to `.pdf` or native Microsoft Word (`.docx`). Equations are automatically converted into native, fully editable Microsoft Word Equation Editor (OMML) objects using a bundled offline Pandoc converter.
+- **Runaway Process Safeguard:** Strict 10-second child process timeouts cleanly kill runaway compilation loops without crashing the IDE or freezing your CPU.
+- **Apple HIG-Inspired Dark Aesthetic:** Sleek, distraction-free interface built with native typography and smooth resizable split panes.
 
 ---
 
 ## 🛠️ Architecture
 
 - **Frontend:** CodeMirror 5 (with active line spotlighting and syntax highlighting), PDF.js (offline canvas rendering), and Split.js (smooth resizable dual-pane layout).
-- **Backend:** Built with **Tauri v2** and **Rust**. Rust manages child process execution (`pdflatex`, `synctex`), memory safety, IPC communication, and native Windows Win32/COM file dialogs.
-- **Converter:** Embedded, bundled standalone Pandoc binary for native `.docx` export without external dependencies.
+- **Backend (Tauri v2 & Rust):** Manages child processes (`pdflatex`, `synctex`, `pandoc`), enforces memory safety, provides native file dialogs, and maps platform-specific environment PATHs (`/Library/TeX/texbin`, Homebrew, system binaries).
+- **Converter:** Embedded standalone Pandoc engine for direct Word `.docx` conversion with OMML equations.
+
+---
+
+## 🔨 Build from Source (Developers)
+
+If you wish to compile LaTeX Editor from source on your machine:
+
+```bash
+# 1. Clone repository
+git clone https://github.com/Bandetheighteen/ltex-editor.git
+cd ltex-editor
+
+# 2. Install Node dependencies
+npm install
+
+# 3. Download offline vendor assets (CodeMirror, PDF.js, Split.js) and Pandoc binary
+npm run setup
+
+# 4. Run desktop app in development mode
+npm run dev
+
+# 5. Package release binary for your OS
+npm run build
+```
 
 ---
 

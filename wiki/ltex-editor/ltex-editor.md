@@ -35,7 +35,10 @@ The project is structured as a cross-platform native desktop application powered
   - **Windows:** **MiKTeX** (recommended) or **TeX Live**.
   - **macOS:** **MacTeX** (`brew install --cask mactex-no-gui`) or **BasicTeX**.
   - **Linux:** **TeX Live** (`sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries`).
-- **Distribution:** Hosted on GitHub at [Bandetheighteen/ltex-editor](https://github.com/Bandetheighteen/ltex-editor). Multi-platform releases publish installers for Windows (`.exe`), macOS (`.dmg`), and Linux (`.deb` / `.AppImage`).
+- **Distribution:** Hosted on GitHub at [Bandetheighteen/ltex-editor](https://github.com/Bandetheighteen/ltex-editor). Multi-platform releases publish installers for:
+  - Windows: `LaTeX-Editor-Native-Setup.exe` (26.6 MB)
+  - macOS: `LaTeX.Editor_1.0.0_aarch64.dmg` (45.6 MB)
+  - Linux: `LaTeX.Editor_1.0.0_amd64.deb` (38.7 MB), `LaTeX.Editor_1.0.0_amd64.AppImage` (111.8 MB), and `LaTeX.Editor-1.0.0-1.x86_64.rpm` (38.7 MB).
 
 ## Authorship & Legal Licensing
 
