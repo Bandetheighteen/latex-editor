@@ -1,33 +1,110 @@
 ---
-last_mapped_commit: 1299ffb211b27cf02d07190ef35d888d8759c711
-last_mapped_at: 2026-10-08
+last_mapped_commit: 08970adae4941348382245362dc7c159533843bd
+last_mapped_at: 2026-10-25
 ---
 # Coding Conventions
 
-**Analysis Date:** 2026-10-08
+**Analysis Date:** 2026-10-25
 
-## JavaScript Style
+## Naming Patterns
 
-- Standard ES6+ syntax.
-- Both backend and frontend use CommonJS and ES modules where appropriate.
-- `main.js` utilizes standard DOM APIs with async/await for network/IPC calls.
+**Files:**
+- JavaScript modules: `kebab-case.js` (e.g., `backend-adapter.js`, `setup-pandoc.js`).
+- Rust source files: `snake_case.rs` (e.g., `lib.rs`, `main.rs`, `build.rs`).
+- CSS stylesheets: `kebab-case.css` (e.g., `style.css`).
+- Markdown documents: `UPPERCASE.md` for planning and architecture docs (`STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`).
+
+**Functions:**
+- JavaScript: `camelCase` for functions and methods (e.g., `compileLatex()`, `updateAutoCompileUI()`, `renderPdfPage()`, `handlePdfClick()`).
+- Rust: `snake_case` for functions, commands, and local variables (e.g., `compile_latex()`, `get_workspace_dir()`, `create_system_command()`, `get_pandoc_path()`).
+
+**Variables:**
+- JavaScript: `camelCase` for variables and constants (e.g., `savedDraft`, `isAutoCompile`, `pdfDoc`, `compileTimeout`); `UPPER_SNAKE_CASE` for global constant defaults (e.g., `DEFAULT_LATEX`).
+- Rust: `snake_case` for local variables (e.g., `tex_path`, `pdf_buffer`, `pandoc_cmd`); `UPPER_SNAKE_CASE` for statics and constants.
+
+**Types & Structs:**
+- JavaScript: `PascalCase` for classes (e.g., `class BackendAdapter`).
+- Rust: `PascalCase` for structs and enums (e.g., `struct CompileResponse`, `struct SyncTexResponse`).
+
+## Code Style
+
+**Formatting:**
+- JavaScript: 4-space indentation, semicolons enforced, single quotes for strings in JS scripts, double quotes for JSON.
+- Rust: Standard `rustfmt` formatting (4 spaces, trailing commas in multi-line lists, standard `Result<T, E>` idiomatic matching).
+- CSS: 2-space or 4-space indentation, modern CSS variables (`--bg-primary`, `--accent-color`, `--text-muted`) for consistent dark mode theming.
+
+**Linting:**
+- Rust compiler warnings enforced via `cargo check` and `clippy`.
+- Minimalist dependency footprint in frontend (zero bundler overhead, pure vanilla ES6+ scripts directly executable in modern WebViews).
+
+## Import Organization
+
+**Order (Rust):**
+1. Standard library imports (`std::fs`, `std::process::Command`, `std::path::PathBuf`)
+2. External crates (`serde::Serialize`, `tinyfiledialogs`)
+3. Internal module / crate declarations (`app_lib::run`)
+
+**Order (JavaScript):**
+1. Offline vendor scripts loaded in `<head>` (`codemirror.min.js`, `pdf.min.js`, `split.min.js`)
+2. Custom abstraction adapters (`backend-adapter.js`)
+3. Primary application controller (`main.js`)
+
+**Path Aliases:**
+- None. Relative paths and standard `/vendor/` routing used across `public/`.
 
 ## Error Handling
 
-- Backend `child_process.exec` calls catch errors from `pdflatex` (which routinely exits with non-zero codes on compilation errors). The backend reads the generated `.log` file and sends it back to the client for display in the preview pane.
+**Patterns (Rust):**
+- System errors converted to clean strings using `.map_err(|e| e.to_string())` or `format!("Failed to spawn ...: {}", e)`.
+- Non-fatal process failures gracefully captured in response structs (`CompileResponse { pdf_buffer: None, log: log_content, error: Some(...) }`) rather than panicking or crashing.
+- File dialog cancellations cleanly return `Ok(false)` without error propagation.
 
-## Dual Mode API calls
+**Patterns (JavaScript):**
+- Async operations wrapped in `try { ... } catch (err) { ... }` blocks.
+- User feedback delivered via status pills (`#status-pill`), alert notifications for critical OS errors, or dedicated in-app compile error dialogs.
 
-The frontend relies on the `window.api` check.
+## Logging
 
-```javascript
-if (window.api) {
-    // We are in Electron
-    response = await window.api.compile(code);
-} else {
-    // We are in Web browser
-    let res = await fetch('/api/compile', { ... });
-}
-```
+**Framework:**
+- Rust: `tauri-plugin-log` and `log` crate initialized in debug mode with `LevelFilter::Info`.
+- JavaScript: Native `console.error` and `console.log` for debugging and IPC tracing.
 
-<!-- refreshed: 2026-10-08 -->
+**Patterns:**
+- Errors during IPC commands log context before returning user-friendly messages.
+- Silent fallbacks implemented where appropriate (e.g., SyncTeX offset scanning logs warnings instead of crashing).
+
+## Comments
+
+**When to Comment:**
+- Crucial architectural constraints (e.g., macOS/Linux PATH augmentation reasons).
+- High-DPI coordinate transformation formulas in SyncTeX event handlers.
+- Auto-compilation debouncing rationale and state machine flows.
+
+**JSDoc/TSDoc:**
+- Concise doc comments on public functions and adapter methods (`BackendAdapter.invokeCompile`).
+
+## Function Design
+
+**Size:**
+- Single responsibility functions kept under 50 lines where possible.
+- Complex coordinate resolution factored into specialized helpers (`query_synctex_point`, `get_pandoc_path`).
+
+**Parameters:**
+- Explicit type declarations in Rust.
+- Normalized parameter structures across IPC boundaries.
+
+**Return Values:**
+- Structured responses (`Result<CompileResponse, String>`) ensuring complete auditability of stdout and stderr.
+
+## Module Design
+
+**Exports:**
+- JavaScript modules attach directly to global scope in browser environment (`window.BackendAdapter = BackendAdapter`) to remain compatible without a bundler.
+- Rust functions marked with `#[tauri::command]` and exposed via `generate_handler!`.
+
+**Barrel Files:**
+- `src-tauri/src/lib.rs` acts as the primary library barrel for Tauri runtime integration.
+
+---
+
+*Convention analysis: 2026-10-25*
