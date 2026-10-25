@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 08970adae4941348382245362dc7c159533843bd
+last_mapped_commit: 5b68d289dda9aa8130b04bde7f997b5e780b19de
 last_mapped_at: 2026-10-25
 ---
 # Technology Stack
@@ -32,12 +32,13 @@ last_mapped_at: 2026-10-25
 
 **Core:**
 - Tauri v2 (`@tauri-apps/api` ^2.12.1, `tauri` 2.12.1) - Native desktop windowing, OS integration, and IPC (`package.json`, `src-tauri/Cargo.toml`)
-- CodeMirror 5 (v5.65.16) - In-browser code editor with `stex` syntax mode, active line spotlight, and line wrapping (`public/vendor/codemirror/`)
-- PDF.js (v3.11.174) - Offline PDF document rendering onto HTML5 canvas (`public/vendor/pdfjs/`)
+- CodeMirror 5 (v5.65.13 / v5.65.16) - In-browser code editor with `stex` syntax mode, active line spotlight, and line wrapping (`public/vendor/codemirror/`)
+- PDF.js (v2.16.105) - Offline PDF document rendering onto HTML5 canvas (`public/vendor/pdfjs/`)
 - Split.js (v1.6.5) - Resizable split panes for dual-pane editing layout (`public/vendor/split/`)
 
 **Testing:**
-- None formal currently configured (manual verification and CI release builds in `.github/workflows/release.yml`)
+- Standard Rust test harness (`cargo test` / `cargo check`)
+- Manual UAT protocol and GitHub Actions multi-platform release CI builds (`.github/workflows/release.yml`)
 
 **Build/Dev:**
 - `@tauri-apps/cli` (^2.12.1) - Desktop bundling and cross-platform compilation CLI (`package.json`)
@@ -53,7 +54,7 @@ last_mapped_at: 2026-10-25
 - Pandoc (v3.12.1 standalone) - Offline binary engine for converting LaTeX into Microsoft Word (`.docx`) with OMML formulas (`src-tauri/binaries/pandoc.exe`, `setup-pandoc.js`)
 
 **Infrastructure:**
-- `pdflatex` (MiKTeX / TeX Live) - System-level compiler invoked via child processes (`src-tauri/src/lib.rs`)
+- `pdflatex` (MiKTeX / TeX Live / MacTeX) - System-level compiler invoked via child processes (`src-tauri/src/lib.rs`)
 - `synctex` - System-level CLI for bidirectional position mapping between PDF coordinates and source lines (`src-tauri/src/lib.rs`)
 
 ## Configuration
@@ -66,6 +67,7 @@ last_mapped_at: 2026-10-25
 - `src-tauri/tauri.conf.json` - Bundle metadata, window sizes (1200x800), CSP settings, bundled resources (`binaries/*`)
 - `package.json` - Setup commands (`npm run setup`, `npm run dev`, `npm run build`)
 - `setup-pandoc.js` - Automated architecture-aware download of standalone Pandoc binaries
+- `setup-vendors.js` - Automated fetch script for offline browser dependencies
 
 ## Platform Requirements
 
@@ -77,8 +79,8 @@ last_mapped_at: 2026-10-25
 
 **Production:**
 - Windows: Standalone NSIS installer (`LaTeX-Editor-Native-Setup.exe`)
-- macOS: Disk Image (`.dmg`) and App archive (`.app.tar.gz`) for Apple Silicon (`aarch64`)
-- Linux: Debian package (`.deb`), Universal AppImage (`.AppImage`), and Red Hat package (`.rpm`) for `x86_64` / `amd64`
+- macOS: Disk Image (`.dmg`) and App archive (`.app.tar.gz`) for Apple Silicon (`aarch64-apple-darwin`, macOS 10.15+)
+- Linux: Debian package (`.deb`), Universal AppImage (`.AppImage`), and Red Hat package (`.rpm`) for `x86_64` / `amd64` (requires `libwebkit2gtk-4.1-0 | libwebkit2gtk-4.0-37`, `libgtk-3-0`)
 
 ---
 

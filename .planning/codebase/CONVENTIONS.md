@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 08970adae4941348382245362dc7c159533843bd
+last_mapped_commit: 5b68d289dda9aa8130b04bde7f997b5e780b19de
 last_mapped_at: 2026-10-25
 ---
 # Coding Conventions
@@ -9,14 +9,14 @@ last_mapped_at: 2026-10-25
 ## Naming Patterns
 
 **Files:**
-- JavaScript modules: `kebab-case.js` (e.g., `backend-adapter.js`, `setup-pandoc.js`).
+- JavaScript modules: `kebab-case.js` (e.g., `backend-adapter.js`, `setup-pandoc.js`, `setup-vendors.js`).
 - Rust source files: `snake_case.rs` (e.g., `lib.rs`, `main.rs`, `build.rs`).
 - CSS stylesheets: `kebab-case.css` (e.g., `style.css`).
 - Markdown documents: `UPPERCASE.md` for planning and architecture docs (`STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`).
 
 **Functions:**
-- JavaScript: `camelCase` for functions and methods (e.g., `compileLatex()`, `updateAutoCompileUI()`, `renderPdfPage()`, `handlePdfClick()`).
-- Rust: `snake_case` for functions, commands, and local variables (e.g., `compile_latex()`, `get_workspace_dir()`, `create_system_command()`, `get_pandoc_path()`).
+- JavaScript: `camelCase` for functions and methods (e.g., `compileLatex()`, `updateAutoCompileUI()`, `renderPdf()`, `triggerSyncTexJump()`).
+- Rust: `snake_case` for functions, commands, and local variables (e.g., `compile_latex()`, `get_workspace_dir()`, `create_system_command()`, `get_pandoc_path()`, `query_synctex_point()`).
 
 **Variables:**
 - JavaScript: `camelCase` for variables and constants (e.g., `savedDraft`, `isAutoCompile`, `pdfDoc`, `compileTimeout`); `UPPER_SNAKE_CASE` for global constant defaults (e.g., `DEFAULT_LATEX`).
@@ -31,7 +31,7 @@ last_mapped_at: 2026-10-25
 **Formatting:**
 - JavaScript: 4-space indentation, semicolons enforced, single quotes for strings in JS scripts, double quotes for JSON.
 - Rust: Standard `rustfmt` formatting (4 spaces, trailing commas in multi-line lists, standard `Result<T, E>` idiomatic matching).
-- CSS: 2-space or 4-space indentation, modern CSS variables (`--bg-primary`, `--accent-color`, `--text-muted`) for consistent dark mode theming.
+- CSS: Modern CSS custom properties (`--bg-primary`, `--accent-color`, `--text-muted`, `--border-color`) for consistent Apple HIG dark mode theming.
 
 **Linting:**
 - Rust compiler warnings enforced via `cargo check` and `clippy`.
@@ -61,7 +61,7 @@ last_mapped_at: 2026-10-25
 
 **Patterns (JavaScript):**
 - Async operations wrapped in `try { ... } catch (err) { ... }` blocks.
-- User feedback delivered via status pills (`#status-pill`), alert notifications for critical OS errors, or dedicated in-app compile error dialogs.
+- User feedback delivered via status pills (`#status-pill`), alert notifications for critical OS errors, or dedicated in-app compile error dialogs (`#error-overlay`).
 
 ## Logging
 

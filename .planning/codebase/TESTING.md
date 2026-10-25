@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 08970adae4941348382245362dc7c159533843bd
+last_mapped_commit: 5b68d289dda9aa8130b04bde7f997b5e780b19de
 last_mapped_at: 2026-10-25
 ---
 # Testing Patterns
@@ -50,14 +50,14 @@ mod tests {
 ```
 
 **Manual UAT Verification Protocol:**
-1. **Compilation Check:** Enter valid LaTeX syntax, press `Ctrl+S` / `Cmd+S`, verify status pill displays "Ready" and PDF canvas renders cleanly.
-2. **Error Boundary Check:** Introduce intentional syntax error (`\undefinedcommand`), press `Compile`, verify status pill displays "Compile Error" with log output visible.
-3. **SyncTeX Navigation Check:** Click on various sections of the rendered PDF preview, confirm editor smoothly scrolls to the exact source line and flashes a luminous emerald pulse.
-4. **Auto-Compile Toggle:** Toggle button between `OFF` and `ON`. In `OFF`, verify typing does not trigger compilation; in `ON`, verify compilation debounces after typing stops.
+1. **Compilation Check:** Enter valid LaTeX syntax, press `Ctrl+S` / `Cmd+S` / `Ctrl+Enter`, verify status pill displays "Ready" / "Compiled Successfully" and PDF canvas renders cleanly.
+2. **Error Boundary Check:** Introduce intentional syntax error (`\undefinedcommand`), press `Compile`, verify status pill displays "Compilation Error" with log output visible in `#error-overlay`.
+3. **SyncTeX Navigation Check:** Click or double-click on rendered PDF preview text, confirm editor smoothly scrolls to the exact source line and flashes a luminous highlight.
+4. **Auto-Compile Toggle:** Toggle button between `OFF` and `ON`. In `OFF`, verify typing does not trigger compilation; in `ON`, verify compilation debounces after typing stops (1200ms delay).
 5. **Zoom Controls:** Click zoom in (`+`), zoom out (`-`), and verify scaling between 60% and 300% renders crisply at all DPI levels.
 6. **Export Verification:**
-   - Click Export &rarr; "Export as PDF (.pdf)", verify native save dialog opens and saves valid PDF.
-   - Click Export &rarr; "Export as Word (.docx)", verify native save dialog opens, saves valid `.docx`, and equations open in Word as native OMML objects.
+   - Click Export &rarr; "Export PDF (.pdf)", verify native save dialog opens and saves valid PDF.
+   - Click Export &rarr; "Export Word (.docx)", verify native save dialog opens, saves valid `.docx`, and equations open in Word as native OMML objects.
 
 ## Mocking
 
@@ -93,7 +93,7 @@ mod tests {
 - Rust compiler and type checker gate backend safety (`cargo check`).
 
 **Integration Tests:**
-- GitHub Actions CI/CD matrix (.github/workflows/release.yml) compiles and packages real release targets on macOS (`aarch64-apple-darwin`) and Ubuntu 22.04 (`x86_64`).
+- GitHub Actions CI/CD matrix (`.github/workflows/release.yml`) compiles and packages real release targets on macOS (`aarch64-apple-darwin`) and Ubuntu 22.04 (`x86_64`).
 
 **E2E Tests:**
 - Manual interactive verification protocol on target platforms.

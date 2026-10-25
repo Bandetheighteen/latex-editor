@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 08970adae4941348382245362dc7c159533843bd
+last_mapped_commit: 5b68d289dda9aa8130b04bde7f997b5e780b19de
 last_mapped_at: 2026-10-25
 ---
 # Codebase Structure
@@ -33,6 +33,8 @@ latex-editor/
 ├── src-tauri/                   # Rust native backend and Tauri configuration
 │   ├── binaries/                # Pre-packaged native binaries (Pandoc)
 │   │   └── pandoc.exe           # Standalone Pandoc binary for Word export
+│   ├── capabilities/            # Tauri v2 security capability declarations
+│   │   └── default.json         # Window permissions and core plugins
 │   ├── icons/                   # Multi-resolution application icons
 │   ├── src/
 │   │   ├── lib.rs               # Tauri command handlers, PATH logic, child processes
@@ -76,6 +78,11 @@ latex-editor/
 - Contains: `pandoc.exe` (Windows) and extracted Unix binaries during CI/CD.
 - Key files: `src-tauri/binaries/pandoc.exe`.
 
+**`src-tauri/capabilities/`:**
+- Purpose: Tauri v2 capability configuration granting fine-grained window permissions.
+- Contains: JSON capability definitions.
+- Key files: `src-tauri/capabilities/default.json`.
+
 **`.github/workflows/`:**
 - Purpose: Continuous Integration and multi-platform packaging automation.
 - Contains: GitHub Actions workflow specifications.
@@ -92,6 +99,7 @@ latex-editor/
 **Configuration:**
 - `src-tauri/tauri.conf.json`: Tauri windowing, bundle identifiers, and target settings.
 - `src-tauri/Cargo.toml`: Rust compiler edition and crate dependencies.
+- `src-tauri/capabilities/default.json`: Tauri v2 capability policies.
 - `package.json`: NPM package metadata and lifecycle scripts.
 
 **Core Logic:**
@@ -112,7 +120,7 @@ latex-editor/
 
 **Directories:**
 - Top-level: `kebab-case` (`src-tauri`, `public`, `assets`, `release`, `wiki`)
-- Subdirectories: `lowercase` (`vendor`, `binaries`, `icons`, `workflows`)
+- Subdirectories: `lowercase` (`vendor`, `binaries`, `icons`, `capabilities`, `workflows`)
 
 ## Where to Add New Code
 
@@ -129,7 +137,7 @@ latex-editor/
 
 **New Export Format:**
 - Add conversion logic or CLI invocation in `src-tauri/src/lib.rs`.
-- Add dropdown item in `public/index.html` under `#export-dropdown-menu`.
+- Add dropdown item in `public/index.html` under `#export-menu`.
 - Bind click listener in `public/main.js` invoking the new backend adapter method.
 
 ## Special Directories

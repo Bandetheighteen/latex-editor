@@ -1,5 +1,5 @@
 ---
-last_mapped_commit: 08970adae4941348382245362dc7c159533843bd
+last_mapped_commit: 5b68d289dda9aa8130b04bde7f997b5e780b19de
 last_mapped_at: 2026-10-25
 ---
 <!-- refreshed: 2026-10-25 -->
@@ -45,12 +45,13 @@ last_mapped_at: 2026-10-25
 | Component | Responsibility | File |
 |-----------|----------------|------|
 | `public/index.html` | Application shell, controls header, dual split panes, zoom stepper, auto-compile toggle, export dropdown | `public/index.html` |
-| `public/main.js` | UI events, CodeMirror initialization, PDF.js rendering, SyncTeX click coordination, zoom calculations, local draft persistence | `public/main.js` |
+| `public/main.js` | UI events, CodeMirror initialization, multi-page PDF.js rendering, SyncTeX click coordination, zoom calculations, local draft persistence | `public/main.js` |
 | `public/backend-adapter.js` | Strict IPC abstraction bridging JavaScript frontend with Tauri v2 commands | `public/backend-adapter.js` |
 | `public/style.css` | Apple HIG dark aesthetic, glassmorphism, responsive split gutters, active line spotlight, luminous SyncTeX pulse | `public/style.css` |
 | `src-tauri/src/lib.rs` | Tauri commands (`compile_latex`, `synctex`, `save_pdf`, `save_docx`), system PATH resolution, process supervision, workspace management | `src-tauri/src/lib.rs` |
 | `src-tauri/src/main.rs` | Rust desktop entry point delegating to `app_lib::run()` | `src-tauri/src/main.rs` |
 | `setup-pandoc.js` | Architecture and OS detection for automated download/extraction of standalone Pandoc binary into `src-tauri/binaries/` | `setup-pandoc.js` |
+| `setup-vendors.js` | Offline dependency downloader ensuring CodeMirror, PDF.js, and Split.js are available without internet | `setup-vendors.js` |
 
 ## Pattern Overview
 
@@ -86,39 +87,39 @@ last_mapped_at: 2026-10-25
 
 ## Data Flow
 
-### Primary Request Path (Compilation)
+### Primary Request Path (LaTeX Compilation)
 
-1. User triggers compilation via `Ctrl+S`, `Cmd+S`, `Compile` button, or auto-compile debounce (`public/main.js:104-124`).
+1. User triggers compilation via `Ctrl+S`, `Cmd+S`, `Ctrl+Enter`, `Compile` button, or auto-compile debounce (`public/main.js:98-107, 309-328`).
 2. `BackendAdapter.invokeCompile(latexCode)` sends IPC command `compile_latex` with current text payload (`public/backend-adapter.js:6-20`).
 3. Rust command writes `document.tex` to `latex-editor-workspace` and executes `pdflatex -synctex=1 -interaction=nonstopmode -halt-on-error` (`src-tauri/src/lib.rs:40-54`).
 4. On success, `document.pdf` is read as a byte buffer (`Vec<u8>`) and returned in `CompileResponse` (`src-tauri/src/lib.rs:58-69`).
-5. Frontend converts byte buffer into an `ArrayBuffer`, feeds it into `pdfjsLib.getDocument()`, and renders page 1 onto the canvas (`public/main.js:160-205`).
+5. Frontend converts byte buffer into an `ArrayBuffer`, creates a Blob URL, feeds it into `pdfjsLib.getDocument()`, and loops through all pages rendering each onto `<canvas class="pdf-canvas">` (`public/main.js:159-224, 238-250`).
 
 ### Secondary Flow Name (Bidirectional SyncTeX Navigation)
 
-1. User clicks or double-clicks on the rendered PDF preview canvas (`public/main.js:240-272`).
-2. Frontend converts mouse client coordinates into PDF page coordinates using viewport scale and devicePixelRatio (`public/main.js:255-263`).
+1. User clicks or double-clicks on the rendered PDF preview canvas (`public/main.js:180-222`).
+2. Frontend converts mouse client coordinates into PDF page coordinates using viewport scale and element dimensions (`public/main.js:182-192`).
 3. `BackendAdapter.invokeSyncTeX(page, pdfX, pdfY)` calls Rust `synctex` command (`public/backend-adapter.js:22-30`).
-4. Rust backend probes vertical offsets (`0.0, -4.0, 4.0, -8.0, 8.0, -14.0, 14.0`) against `synctex edit` to accommodate line spacing and margins (`src-tauri/src/lib.rs:112-121`).
-5. Line number is returned, CodeMirror scrolls to target line, sets cursor, and flashes line with a luminous green highlight (`public/main.js:275-298`).
+4. Rust backend probes vertical offsets (`0.0, -4.0, 4.0, -8.0, 8.0, -14.0, 14.0`) against `synctex edit` to accommodate line spacing and margins (`src-tauri/src/lib.rs:112-122`).
+5. Line number is returned, CodeMirror scrolls to target line, sets cursor/selection, and flashes line with a luminous highlight (`public/main.js:196-214`).
 
-### Tertiary Flow Name (Word .docx Export)
+### Tertiary Flow Name (Word .docx Export via Pandoc)
 
-1. User selects "Export as Word (.docx)" from the Export dropdown (`public/main.js:324-328`).
+1. User selects "Export Word (.docx)" from the Export dropdown (`public/main.js:293-306`).
 2. `BackendAdapter.invokeSaveDocx(latexCode)` calls `save_docx` command (`public/backend-adapter.js:46-58`).
-3. Rust backend writes `document.tex`, invokes bundled Pandoc binary (`pandoc -s document.tex -o document.docx`), and launches native file dialog via `tinyfiledialogs` (`src-tauri/src/lib.rs:177-210`).
+3. Rust backend writes `document.tex`, discovers Pandoc path via `get_pandoc_path()`, executes `pandoc -s document.tex -o document.docx`, and launches native file dialog via `tinyfiledialogs::save_file_dialog_with_filter` (`src-tauri/src/lib.rs:177-210`).
 4. Output file is copied to user's selected file path.
 
 **State Management:**
-- Source Code: Kept in CodeMirror instance and synchronized into `localStorage['latex_source_code']`.
-- Zoom Factor: Tracked in `currentScale` (default 1.5, range 0.6–3.0) and synchronized into `localStorage['pdf_zoom_level']`.
+- Source Code: Kept in CodeMirror instance and synchronized into `localStorage['latex_source_code']` on change.
 - Auto-Compile Toggle: Boolean state tracked in `isAutoCompile` and synchronized into `localStorage['auto_compile_enabled']`.
+- Zoom Factor: Tracked in `currentScale` (default 1.35, range 0.6–3.0) and displayed via `updateZoomDisplay()`.
 - Compilation Artifacts: Persisted in OS temp directory (`latex-editor-workspace`).
 
 ## Key Abstractions
 
 **`BackendAdapter` (`public/backend-adapter.js`):**
-- Purpose: Encapsulates desktop IPC communication, ensuring the frontend code remains clean and testable.
+- Purpose: Encapsulates desktop IPC communication, ensuring the frontend code remains decoupled from Tauri specifics.
 - Pattern: Static Gateway / Facade Pattern.
 
 **`create_system_command` (`src-tauri/src/lib.rs:14-30`):**
@@ -146,6 +147,7 @@ last_mapped_at: 2026-10-25
 - **Threading:** Rust backend executes async commands in Tauri's threadpool. Child processes (`pdflatex`, `synctex`, `pandoc`) are spawned synchronously within async tasks, preserving UI responsiveness.
 - **Global State:** Zero global mutable static variables in Rust. All state is either derived from the filesystem workspace or managed per command invocation.
 - **No Remote Dependencies:** Zero web runtime servers, sockets, or HTTP services.
+- **Single Window Context:** Default capabilities configure a single window `"main"`.
 
 ## Anti-Patterns
 
