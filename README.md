@@ -21,14 +21,14 @@ Get the standalone installer or package for your operating system:
 
 | Platform | Architecture | Package Format | Direct Download | Size |
 |---|---|---|---|---|
-| **Windows 10 / 11** | `x86_64` | Native Installer (`.exe`) &bull; **v2.0.0 (Latest)** | [**Download for Windows (v2.0.0)**](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX-Editor-Setup-v2.0.0.exe) <br/> *(or from repo: [`release/LaTeX-Editor-Setup-v2.0.0.exe`](release/LaTeX-Editor-Setup-v2.0.0.exe))* | 26.6 MB |
-| **macOS (Apple Silicon)** | `aarch64` (M1/M2/M3/M4) | Disk Image (`.dmg`) | [**Download for macOS (.dmg)**](https://github.com/Bandetheighteen/latex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_aarch64.dmg) | 45.6 MB |
-| **macOS (Apple Silicon)** | `aarch64` | App Archive (`.tar.gz`) | [**Download for macOS (.tar.gz)**](https://github.com/Bandetheighteen/latex-editor/releases/download/v1.1.0/LaTeX.Editor_aarch64.app.tar.gz) | 45.5 MB |
-| **Linux (Ubuntu / Debian / Mint)** | `amd64` | Debian Package (`.deb`) | [**Download for Debian/Ubuntu**](https://github.com/Bandetheighteen/latex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_amd64.deb) | 38.7 MB |
-| **Linux (Universal Portable)** | `amd64` | Standalone AppImage (`.AppImage`) | [**Download AppImage**](https://github.com/Bandetheighteen/latex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_amd64.AppImage) | 111.8 MB |
-| **Linux (Fedora / RHEL / openSUSE)** | `x86_64` | Red Hat Package (`.rpm`) | [**Download for Fedora/RHEL**](https://github.com/Bandetheighteen/latex-editor/releases/download/v1.1.0/LaTeX.Editor-1.0.0-1.x86_64.rpm) | 38.7 MB |
+| **Windows 10 / 11** | `x86_64` | Native Installer (`.exe`) &bull; **v2.0.0** | [**Download for Windows (v2.0.0)**](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX-Editor-Setup-v2.0.0.exe) <br/> *(or from repo: [`release/LaTeX-Editor-Setup-v2.0.0.exe`](release/LaTeX-Editor-Setup-v2.0.0.exe))* | 26.6 MB |
+| **macOS (Apple Silicon)** | `aarch64` (M1/M2/M3/M4) | Disk Image (`.dmg`) &bull; **v2.0.0** | [**Download for macOS (.dmg)**](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX.Editor_2.0.0_aarch64.dmg) | 45.7 MB |
+| **macOS (Apple Silicon)** | `aarch64` | App Archive (`.tar.gz`) &bull; **v2.0.0** | [**Download for macOS (.tar.gz)**](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX-Editor_2.0.0_aarch64.app.tar.gz) | 45.6 MB |
+| **Linux (Ubuntu / Debian / Mint)** | `amd64` | Debian Package (`.deb`) &bull; **v2.0.0** | [**Download for Debian/Ubuntu**](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX.Editor_2.0.0_amd64.deb) | 38.8 MB |
+| **Linux (Universal Portable)** | `amd64` | Standalone AppImage (`.AppImage`) &bull; **v2.0.0** | [**Download AppImage**](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX.Editor_2.0.0_amd64.AppImage) | 111.9 MB |
+| **Linux (Fedora / RHEL / openSUSE)** | `x86_64` | Red Hat Package (`.rpm`) &bull; **v2.0.0** | [**Download for Fedora/RHEL**](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX.Editor-2.0.0-1.x86_64.rpm) | 38.8 MB |
 
-> 🚀 **Windows Version 2.0 (v2.0.0) is officially released!** Version 2 introduces the **Welcome & Projects Dashboard**, **Direct Disk File Saving (`Ctrl+S`)**, **OS File Associations ("Open With...")**, and **Overleaf-Style Autocomplete & Snippet Expansion** (`\begin` suggestions).
+> 🚀 **Multi-Platform Version 2.0 (v2.0.0) is officially live across Windows, macOS, and Linux!** Version 2 introduces the **Welcome & Projects Dashboard**, **Direct Disk File Saving (`Ctrl+S` / `Cmd+S`)**, **OS File Associations ("Open With...")**, and **Overleaf-Style Autocomplete & Snippet Expansion** (`\begin` suggestions).
 > The release installer is also bundled right inside this repository under the [`release/`](release/) folder: [**`release/LaTeX-Editor-Setup-v2.0.0.exe`**](release/LaTeX-Editor-Setup-v2.0.0.exe) (also mirrored as [**`release/LaTeX-Editor-Native-Setup.exe`**](release/LaTeX-Editor-Native-Setup.exe)).
 > 
 > 📌 **Looking for all releases and tags?** Visit the **[GitHub Releases Page](https://github.com/Bandetheighteen/latex-editor/releases)**.
@@ -82,7 +82,7 @@ Install MacTeX or lightweight BasicTeX to provide the TeX compilation binaries:
   Download MacTeX directly from **[tug.org/mactex](https://tug.org/mactex/)**.
 
 #### Step 2: Install LaTeX Editor
-1. Download **[`LaTeX.Editor_1.0.0_aarch64.dmg`](https://github.com/Bandetheighteen/latex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_aarch64.dmg)**.
+1. Download **[`LaTeX.Editor_2.0.0_aarch64.dmg`](https://github.com/Bandetheighteen/latex-editor/releases/download/v2.0.0/LaTeX.Editor_2.0.0_aarch64.dmg)**.
 2. Double-click the `.dmg` file to open it.
 3. Drag the **LaTeX Editor** icon into your **Applications** folder.
 4. Launch **LaTeX Editor** from Spotlight or Launchpad!
@@ -118,21 +118,21 @@ Choose the package format preferred for your system:
 
 - **Option A: Standalone AppImage (Universal - No installation required)**
   ```bash
-  # 1. Download LaTeX.Editor_1.0.0_amd64.AppImage
+  # 1. Download LaTeX.Editor_2.0.0_amd64.AppImage
   # 2. Make it executable:
-  chmod +x LaTeX.Editor_1.0.0_amd64.AppImage
+  chmod +x LaTeX.Editor_2.0.0_amd64.AppImage
   # 3. Run:
-  ./LaTeX.Editor_1.0.0_amd64.AppImage
+  ./LaTeX.Editor_2.0.0_amd64.AppImage
   ```
 - **Option B: Debian / Ubuntu Package (`.deb`)**
   ```bash
-  sudo dpkg -i LaTeX.Editor_1.0.0_amd64.deb
+  sudo dpkg -i LaTeX.Editor_2.0.0_amd64.deb
   # If any missing system dependencies are reported, run:
   sudo apt-get install -f
   ```
 - **Option C: Fedora / RHEL Package (`.rpm`)**
   ```bash
-  sudo dnf install ./LaTeX.Editor-1.0.0-1.x86_64.rpm
+  sudo dnf install ./LaTeX.Editor-2.0.0-1.x86_64.rpm
   ```
 </details>
 
