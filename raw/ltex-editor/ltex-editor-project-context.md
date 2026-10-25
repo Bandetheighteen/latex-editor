@@ -1,4 +1,4 @@
-# Ltex Editor Project Context
+# LaTeX Editor Project Context
 
 > Source: Local project repository (.planning/PROJECT.md and README.md)
 > Collected: 2026-10-08

@@ -1,4 +1,4 @@
-# Ltex Editor
+# LaTeX Editor
 
 > Sources: Local project repository, 2026-10-08; Local project repository, 2026-10-24; Local project repository, 2026-10-25
 > Raw: [ltex-editor-project-context](../../raw/ltex-editor/ltex-editor-project-context.md); [2026-10-24-v1-native-release-and-word-export](../../raw/ltex-editor/2026-10-24-v1-native-release-and-word-export.md); [2026-10-25-cross-platform-mac-and-linux-support](../../raw/ltex-editor/2026-10-25-cross-platform-mac-and-linux-support.md)
@@ -6,7 +6,7 @@
 
 ## Overview
 
-Ltex Editor is a local-first, 100% offline native desktop LaTeX editor designed to eliminate reliance on internet-dependent cloud tools like Overleaf. Built around an Apple HIG-inspired dual-pane layout (CodeMirror on the left, live PDF.js preview on the right), it provides crash-free compilation, bidirectional SyncTeX navigation, and native Microsoft Word (`.docx`) export across Windows, macOS, and Linux.
+LaTeX Editor is a local-first, 100% offline native desktop LaTeX editor designed to eliminate reliance on internet-dependent cloud tools like Overleaf. Built around an Apple HIG-inspired dual-pane layout (CodeMirror on the left, live PDF.js preview on the right), it provides crash-free compilation, bidirectional SyncTeX navigation, and native Microsoft Word (`.docx`) export across Windows, macOS, and Linux.
 
 ## Architecture
 

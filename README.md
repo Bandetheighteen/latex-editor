@@ -21,7 +21,7 @@ Get the standalone installer or package for your operating system:
 
 | Platform | Architecture | Package Format | Direct Download | Size |
 |---|---|---|---|---|
-| **Windows 10 / 11** | `x86_64` | Native Installer (`.exe`) | [**Download for Windows**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.0.0/LaTeX-Editor-Native-Setup.exe) | 26.6 MB |
+| **Windows 10 / 11** | `x86_64` | Native Installer (`.exe`) | [**Download for Windows**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX-Editor-Native-Setup.exe) | 26.6 MB |
 | **macOS (Apple Silicon)** | `aarch64` (M1/M2/M3/M4) | Disk Image (`.dmg`) | [**Download for macOS (.dmg)**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_aarch64.dmg) | 45.6 MB |
 | **macOS (Apple Silicon)** | `aarch64` | App Archive (`.tar.gz`) | [**Download for macOS (.tar.gz)**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_aarch64.app.tar.gz) | 45.5 MB |
 | **Linux (Ubuntu / Debian / Mint)** | `amd64` | Debian Package (`.deb`) | [**Download for Debian/Ubuntu**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_amd64.deb) | 38.7 MB |
@@ -51,7 +51,7 @@ Before launching LaTeX Editor, ensure you have **MiKTeX** (recommended) or **TeX
   Download the Windows installer directly from **[miktex.org/download](https://miktex.org/download)**.
 
 #### Step 2: Install LaTeX Editor
-1. Download **[`LaTeX-Editor-Native-Setup.exe`](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.0.0/LaTeX-Editor-Native-Setup.exe)**.
+1. Download **[`LaTeX-Editor-Native-Setup.exe`](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX-Editor-Native-Setup.exe)**.
 2. Double-click the installer and complete the setup wizard.
 3. Launch **LaTeX Editor** directly from your Desktop or Start Menu!
 
