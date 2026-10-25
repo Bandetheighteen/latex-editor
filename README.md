@@ -3,7 +3,7 @@
   
   # LaTeX Editor
   
-  [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+  [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE)
   [![Platform: Windows | macOS | Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
   [![Release: v2.0.0](https://img.shields.io/github/v/release/Bandetheighteen/latex-editor?color=green)](https://github.com/Bandetheighteen/latex-editor/releases)
   [![Offline: 100%](https://img.shields.io/badge/Offline-100%25-orange.svg)](#)
@@ -213,6 +213,11 @@ This project was built and designed by **Shounak Saha**.
 
 ## 📄 License
 
-This project is licensed under the **[MIT License](LICENSE)** &copy; 2026 **Shounak Saha**.
+This project is dual-licensed under either:
 
-You are free to use, modify, distribute, and collaborate on this project, provided that the original copyright and permission notice are preserved.
+- **[MIT License](LICENSE-MIT)** &copy; 2026 **Shounak Saha**
+- **[Apache License, Version 2.0](LICENSE-APACHE)** &copy; 2026 **Shounak Saha**
+
+at your option.
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you shall be dual-licensed as above, without any additional terms or conditions.

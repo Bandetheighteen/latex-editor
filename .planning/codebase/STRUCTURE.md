@@ -48,7 +48,9 @@ latex-editor/
 │   ├── log.md
 │   └── ltex-editor/
 ├── .gitignore                   # Git exclusion rules
-├── LICENSE                      # MIT Open Source License (c) 2026 Shounak Saha
+├── LICENSE                      # Dual-license notice (MIT or Apache-2.0)
+├── LICENSE-APACHE               # Apache License, Version 2.0
+├── LICENSE-MIT                  # MIT License (c) 2026 Shounak Saha
 ├── package-lock.json            # Node.js lockfile
 ├── package.json                 # npm scripts, metadata, and dev dependencies
 ├── README.md                    # Main project documentation, quickstart, and downloads

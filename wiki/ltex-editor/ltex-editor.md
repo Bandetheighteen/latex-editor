@@ -49,4 +49,4 @@ The project is structured as a cross-platform native desktop application powered
 ## Authorship & Legal Licensing
 
 - **Author:** Created and designed by **Shounak Saha** (*S-H-O-U-N-A-K  S-A-H-A*), a non-coder who hardcoded and vibe-coded the entire software from scratch to resolve personal research friction. The project maintains an active call for open-source contributors and collaborators.
-- **License:** Distributed under the **MIT License** &copy; 2026 Shounak Saha, granting full open-source usage rights while legally protecting the author through disclaimer of warranty and mandatory attribution.
+- **License:** Dual-licensed under the **MIT License** and **Apache License, Version 2.0** &copy; 2026 Shounak Saha, granting full open-source usage and patent rights while legally protecting the author through disclaimer of warranty and mandatory attribution.
