@@ -5,7 +5,7 @@
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
   [![Platform: Windows | macOS | Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#)
-  [![Release: v1.1.0](https://img.shields.io/github/v/release/Bandetheighteen/ltex-editor?color=green)](https://github.com/Bandetheighteen/ltex-editor/releases)
+  [![Release: v2.0.0](https://img.shields.io/github/v/release/Bandetheighteen/ltex-editor?color=green)](https://github.com/Bandetheighteen/ltex-editor/releases)
   [![Offline: 100%](https://img.shields.io/badge/Offline-100%25-orange.svg)](#)
 </div>
 
@@ -21,13 +21,16 @@ Get the standalone installer or package for your operating system:
 
 | Platform | Architecture | Package Format | Direct Download | Size |
 |---|---|---|---|---|
-| **Windows 10 / 11** | `x86_64` | Native Installer (`.exe`) | [**Download for Windows**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX-Editor-Native-Setup.exe) | 26.6 MB |
+| **Windows 10 / 11** | `x86_64` | Native Installer (`.exe`) &bull; **v2.0.0 (Latest)** | [**Download for Windows (v2.0.0)**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v2.0.0/LaTeX-Editor-Setup-v2.0.0.exe) <br/> *(or from repo: [`release/LaTeX-Editor-Setup-v2.0.0.exe`](release/LaTeX-Editor-Setup-v2.0.0.exe))* | 26.6 MB |
 | **macOS (Apple Silicon)** | `aarch64` (M1/M2/M3/M4) | Disk Image (`.dmg`) | [**Download for macOS (.dmg)**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_aarch64.dmg) | 45.6 MB |
 | **macOS (Apple Silicon)** | `aarch64` | App Archive (`.tar.gz`) | [**Download for macOS (.tar.gz)**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_aarch64.app.tar.gz) | 45.5 MB |
 | **Linux (Ubuntu / Debian / Mint)** | `amd64` | Debian Package (`.deb`) | [**Download for Debian/Ubuntu**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_amd64.deb) | 38.7 MB |
 | **Linux (Universal Portable)** | `amd64` | Standalone AppImage (`.AppImage`) | [**Download AppImage**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor_1.0.0_amd64.AppImage) | 111.8 MB |
 | **Linux (Fedora / RHEL / openSUSE)** | `x86_64` | Red Hat Package (`.rpm`) | [**Download for Fedora/RHEL**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX.Editor-1.0.0-1.x86_64.rpm) | 38.7 MB |
 
+> 🚀 **Windows Version 2.0 (v2.0.0) is officially released!** Version 2 introduces the **Welcome & Projects Dashboard**, **Direct Disk File Saving (`Ctrl+S`)**, **OS File Associations ("Open With...")**, and **Overleaf-Style Autocomplete & Snippet Expansion** (`\begin` suggestions).
+> The release installer is also bundled right inside this repository under the [`release/`](release/) folder: [**`release/LaTeX-Editor-Setup-v2.0.0.exe`**](release/LaTeX-Editor-Setup-v2.0.0.exe) (also mirrored as [**`release/LaTeX-Editor-Native-Setup.exe`**](release/LaTeX-Editor-Native-Setup.exe)).
+> 
 > 📌 **Looking for all releases and tags?** Visit the **[GitHub Releases Page](https://github.com/Bandetheighteen/ltex-editor/releases)**.
 
 ---
@@ -37,7 +40,7 @@ Get the standalone installer or package for your operating system:
 Running LaTeX locally requires a TeX engine installed on your computer to compile `.tex` files into PDF typesetting. Follow the dedicated setup guide for your operating system:
 
 <details open>
-<summary><h3>🪟 Windows Setup Guide</h3></summary>
+<summary><h3>🪟 Windows Setup Guide (Version 2.0)</h3></summary>
 
 #### Step 1: Install a TeX Distribution
 Before launching LaTeX Editor, ensure you have **MiKTeX** (recommended) or **TeX Live** installed so `pdflatex` is available on your computer.
@@ -50,10 +53,13 @@ Before launching LaTeX Editor, ensure you have **MiKTeX** (recommended) or **TeX
 - **Option B (Manual Download):**
   Download the Windows installer directly from **[miktex.org/download](https://miktex.org/download)**.
 
-#### Step 2: Install LaTeX Editor
-1. Download **[`LaTeX-Editor-Native-Setup.exe`](https://github.com/Bandetheighteen/ltex-editor/releases/download/v1.1.0/LaTeX-Editor-Native-Setup.exe)**.
+#### Step 2: Install LaTeX Editor v2.0
+1. Download the Windows v2.0 installer using any of these options:
+   - **GitHub Release Direct Link:** [**`LaTeX-Editor-Setup-v2.0.0.exe`**](https://github.com/Bandetheighteen/ltex-editor/releases/download/v2.0.0/LaTeX-Editor-Setup-v2.0.0.exe)
+   - **Repository Direct Download:** Grab the pre-built installer from the [`release/`](release/) folder: [**`release/LaTeX-Editor-Setup-v2.0.0.exe`**](release/LaTeX-Editor-Setup-v2.0.0.exe) or [**`release/LaTeX-Editor-Native-Setup.exe`**](release/LaTeX-Editor-Native-Setup.exe)
 2. Double-click the installer and complete the setup wizard.
 3. Launch **LaTeX Editor** directly from your Desktop or Start Menu!
+4. **"Open With..." Integration:** Once installed, you can right-click any `.tex`, `.latex`, `.md`, or `.txt` file anywhere on your laptop, choose **"Open with..." &rarr; "LaTeX Editor"**, and edit the file directly with `Ctrl + S` disk saving!
 
 > **Windows SmartScreen Tip:** Because LaTeX Editor is an independent open-source project without an enterprise code-signing certificate, Windows SmartScreen may show an informational notice on first run. Simply click **"More info"** &rarr; **"Run anyway"**.
 </details>
@@ -136,8 +142,9 @@ Choose the package format preferred for your system:
 
 | Shortcut (Windows / Linux) | Shortcut (macOS) | Action |
 |---|---|---|
-| `Ctrl + S` | `Cmd + S` | Compile LaTeX Document |
+| `Ctrl + S` | `Cmd + S` | **Save Document Directly to Disk & Compile** (v2.0) |
 | `Ctrl + Enter` | `Cmd + Enter` | Compile LaTeX Document |
+| `Ctrl + Space` | `Cmd + Space` | **Trigger LaTeX Autocomplete & Suggestions** (v2.0) |
 | `Ctrl + =` or `Ctrl + +` | `Cmd + =` or `Cmd + +` | Zoom In PDF Preview |
 | `Ctrl + -` | `Cmd + -` | Zoom Out PDF Preview |
 | `Single Click` / `Double Click` | `Single Click` / `Double Click` | Jump from PDF point to LaTeX Source Line (SyncTeX) |
@@ -146,6 +153,10 @@ Choose the package format preferred for your system:
 
 ## ✨ Core Features
 
+- **Projects & Workspaces Dashboard (v2.0):** Beautiful dashboard welcoming you on launch. Quickly open recent documents with file size and timestamp badges, search/filter recent projects, pick from pre-configured Quick Starters (Research Article, Beamer Presentation, Resume/CV, Math Cheatsheet), or create a fresh blank project.
+- **Direct Disk Saving & OS File Associations (v2.0):** Work directly on your laptop's `.tex`, `.latex`, `.ltx`, `.txt`, and `.md` files without copying and pasting. Right-click any text or LaTeX file in Windows Explorer &rarr; **Open with LaTeX Editor**. Press `Ctrl + S` to save changes directly to disk with atomic write protection.
+- **Overleaf-Style Autocomplete & Suggestions (v2.0):** Get intelligent suggestions as you code. Type `\begin` for an instant dropdown with automatic snippet expansion (`itemize`, `enumerate`, `equation`, `align`, `figure`, `table`, etc.), standard LaTeX macros, math symbols, and active document `\label` discovery for `\ref` and `\cite`.
+- **Project-Relative Asset Compilation (v2.0):** Figures (`\includegraphics{images/...}`) and multi-file subdocuments (`\input{sections/...}`) compile relative to the active document's parent directory.
 - **100% Offline Workflow:** Zero reliance on remote servers, internet connections, or subscription clouds like Overleaf. Work anywhere: on airplanes, field sites, or remote locations.
 - **Precision Bidirectional SyncTeX:** Clicking or double-clicking anywhere on the PDF preview resolves coordinate math and high-DPI scaling ratios, jumps to the exact source line in CodeMirror, centers it in the viewport, and pulses it with a luminous green highlight.
 - **Auto-Compilation Toggle:** Dedicated header toggle (`ON` / `OFF`) defaulting to OFF. Draft freely without interruption, and compile on demand (`Ctrl+S` / `Cmd+S`) or enable auto-compilation with a 1200ms debounce.
@@ -157,8 +168,8 @@ Choose the package format preferred for your system:
 
 ## 🛠️ Architecture
 
-- **Frontend:** CodeMirror 5 (with active line spotlighting and syntax highlighting), PDF.js (offline canvas rendering), and Split.js (smooth resizable dual-pane layout).
-- **Backend (Tauri v2 & Rust):** Manages child processes (`pdflatex`, `synctex`, `pandoc`), enforces memory safety, provides native file dialogs, and maps platform-specific environment PATHs (`/Library/TeX/texbin`, Homebrew, system binaries).
+- **Frontend:** CodeMirror 5 (with active line spotlighting, syntax highlighting, and `show-hint` autocompletion), PDF.js (offline canvas rendering), and Split.js (smooth resizable dual-pane layout).
+- **Backend (Tauri v2 & Rust):** Manages child processes (`pdflatex`, `synctex`, `pandoc`), enforces memory safety, atomic file saving, launch argument parsing for "Open With...", recent project history persistence, native file dialogs, and maps platform-specific environment PATHs (`/Library/TeX/texbin`, Homebrew, system binaries).
 - **Converter:** Embedded standalone Pandoc engine for direct Word `.docx` conversion with OMML equations.
 
 ---
