@@ -6,3 +6,5 @@ dist/
 Brain/
 antigravity-plugin/
 src-tauri/binaries/
+release/
+*.exe
