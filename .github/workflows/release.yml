@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build and attach assets to (e.g., v2.0.0)'
+        required: false
+        default: 'v2.0.0'
 
 permissions:
   contents: write
@@ -27,6 +32,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Resolve Target Release Tag
+        run: |
+          TARGET_TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          echo "TARGET_TAG=$TARGET_TAG" >> $GITHUB_ENV
+          echo "Resolved target release tag: $TARGET_TAG"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -65,27 +76,60 @@ jobs:
       - name: Run setup for offline vendor assets and Pandoc
         run: npm run setup
 
-      - name: Build Desktop Application and Create Release
+      - name: Build Desktop Application via Tauri
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'LaTeX Editor ${{ github.ref_name }}'
-          releaseBody: |
-            ### LaTeX Editor Native Multi-Platform Release
-            
-            100% offline, native LaTeX editing with CodeMirror, PDF.js, precision bidirectional SyncTeX, and Microsoft Word (.docx) export powered by Tauri v2 and Rust.
-            
-            #### Downloads
-            - **macOS**: `LaTeX-Editor.dmg` (Apple Silicon M-Series)
-            - **Linux**: `.deb` (Debian/Ubuntu) and `.AppImage` (Universal Linux)
-            - **Windows**: `LaTeX-Editor-Native-Setup.exe` (Available under Release v1.0.0)
-            
-            #### System Prerequisites
-            - **macOS**: Install [MacTeX](https://tug.org/mactex/) (`brew install --cask mactex-no-gui`) or BasicTeX.
-            - **Linux**: Install TeX Live (`sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries`).
-            - **Windows**: Install [MiKTeX](https://miktex.org) or TeX Live.
+          tagName: ${{ env.TARGET_TAG }}
+          releaseName: 'LaTeX Editor ${{ env.TARGET_TAG }}'
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
+
+      - name: Package macOS .app tarball
+        if: matrix.platform == 'macos-latest'
+        run: |
+          cd src-tauri/target/aarch64-apple-darwin/release/bundle/macos
+          tar -czf "LaTeX-Editor_2.0.0_aarch64.app.tar.gz" "LaTeX Editor.app"
+
+      - name: Upload macOS Binaries to GitHub Release
+        if: matrix.platform == 'macos-latest'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          files=(
+            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app.tar.gz
+          )
+          echo "Uploading macOS assets to release $TARGET_TAG:"
+          printf ' - %s\n' "${files[@]}"
+          gh release upload "$TARGET_TAG" "${files[@]}" --clobber
+
+      - name: Upload Linux Binaries to GitHub Release
+        if: matrix.platform == 'ubuntu-22.04'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          files=(
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/rpm/*.rpm
+          )
+          echo "Uploading Linux assets to release $TARGET_TAG:"
+          printf ' - %s\n' "${files[@]}"
+          gh release upload "$TARGET_TAG" "${files[@]}" --clobber
+
+      - name: Upload Build Artifacts to GitHub Actions Summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: latex-editor-${{ matrix.platform }}
+          path: |
+            src-tauri/target/**/release/bundle/dmg/*.dmg
+            src-tauri/target/**/release/bundle/macos/*.app.tar.gz
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/rpm/*.rpm
+          if-no-files-found: warn
