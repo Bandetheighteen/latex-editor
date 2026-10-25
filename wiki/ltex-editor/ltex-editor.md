@@ -1,7 +1,7 @@
 # LaTeX Editor
 
-> Sources: Local project repository, 2026-10-08; Local project repository, 2026-10-24; Local project repository, 2026-10-25
-> Raw: [ltex-editor-project-context](../../raw/ltex-editor/ltex-editor-project-context.md); [2026-10-24-v1-native-release-and-word-export](../../raw/ltex-editor/2026-10-24-v1-native-release-and-word-export.md); [2026-10-25-cross-platform-mac-and-linux-support](../../raw/ltex-editor/2026-10-25-cross-platform-mac-and-linux-support.md); [2026-10-25-v2-projects-dashboard-and-autocomplete](../../raw/ltex-editor/2026-10-25-v2-projects-dashboard-and-autocomplete.md)
+> Sources: Local project repository, 2026-10-08; Local project repository, 2026-10-24; Local project repository, 2026-10-25; GitHub Actions and Release v2.0.0, 2026-10-25
+> Raw: [ltex-editor-project-context](../../raw/ltex-editor/ltex-editor-project-context.md); [2026-10-24-v1-native-release-and-word-export](../../raw/ltex-editor/2026-10-24-v1-native-release-and-word-export.md); [2026-10-25-cross-platform-mac-and-linux-support](../../raw/ltex-editor/2026-10-25-cross-platform-mac-and-linux-support.md); [2026-10-25-v2-projects-dashboard-and-autocomplete](../../raw/ltex-editor/2026-10-25-v2-projects-dashboard-and-autocomplete.md); [2026-10-25-v2-multiplatform-mac-and-linux-release](../../raw/ltex-editor/2026-10-25-v2-multiplatform-mac-and-linux-release.md)
 > Updated: 2026-10-25
 
 ## Overview
@@ -42,9 +42,9 @@ The project is structured as a cross-platform native desktop application powered
   - **macOS:** **MacTeX** (`brew install --cask mactex-no-gui`) or **BasicTeX** (`brew install --cask basictex`). Mount DMG, drag to `/Applications`. Gatekeeper first-launch bypass via Right-click -> Open -> Open.
   - **Linux:** **TeX Live** (`sudo apt install texlive-latex-base texlive-latex-extra texlive-binaries` or Fedora `sudo dnf install texlive-scheme-basic texlive-synctex`). Standalone AppImage execution (`chmod +x LaTeX.Editor_1.0.0_amd64.AppImage`), Debian install (`sudo dpkg -i LaTeX.Editor_1.0.0_amd64.deb`), or RPM install (`sudo dnf install ./LaTeX.Editor-1.0.0-1.x86_64.rpm`).
 - **Distribution:** Hosted on GitHub at [Bandetheighteen/latex-editor](https://github.com/Bandetheighteen/latex-editor). Multi-platform releases publish installers for:
-  - Windows: `LaTeX-Editor-Setup-v2.0.0.exe` (26.64 MiB) and `LaTeX-Editor-Native-Setup.exe` (26.6 MB / 27,932,441 bytes)
-  - macOS: `LaTeX.Editor_1.0.0_aarch64.dmg` (45.6 MB) and `LaTeX.Editor_aarch64.app.tar.gz` (45.5 MB)
-  - Linux: `LaTeX.Editor_1.0.0_amd64.deb` (38.7 MB), `LaTeX.Editor_1.0.0_amd64.AppImage` (111.8 MB), and `LaTeX.Editor-1.0.0-1.x86_64.rpm` (38.7 MB).
+  - Windows: `LaTeX-Editor-Setup-v2.0.0.exe` (26.6 MB / 27,932,441 bytes) and `LaTeX-Editor-Native-Setup.exe` (26.6 MB / 27,932,441 bytes)
+  - macOS: `LaTeX.Editor_2.0.0_aarch64.dmg` (45.7 MB / 45,698,825 bytes) and `LaTeX-Editor_2.0.0_aarch64.app.tar.gz` (45.6 MB / 45,640,914 bytes)
+  - Linux: `LaTeX.Editor_2.0.0_amd64.deb` (38.8 MB / 38,820,748 bytes), `LaTeX.Editor_2.0.0_amd64.AppImage` (111.9 MB / 111,905,272 bytes), and `LaTeX.Editor-2.0.0-1.x86_64.rpm` (38.8 MB / 38,820,647 bytes).
 
 ## Authorship & Legal Licensing
 
