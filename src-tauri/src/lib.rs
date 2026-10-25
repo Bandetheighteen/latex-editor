@@ -1,7 +1,8 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::process::Command;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn get_workspace_dir() -> std::io::Result<PathBuf> {
     let dir = std::env::temp_dir().join("latex-editor-workspace");
@@ -9,6 +10,73 @@ fn get_workspace_dir() -> std::io::Result<PathBuf> {
         fs::create_dir_all(&dir)?;
     }
     Ok(dir)
+}
+
+fn current_timestamp() -> u64 {
+    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0)
+}
+
+fn get_recent_projects_file() -> PathBuf {
+    let base = if let Ok(appdata) = std::env::var("APPDATA") {
+        PathBuf::from(appdata).join("com.latex.editor")
+    } else if let Ok(home) = std::env::var("HOME") {
+        PathBuf::from(home).join(".config").join("com.latex.editor")
+    } else {
+        std::env::temp_dir().join("com.latex.editor")
+    };
+    if !base.exists() {
+        let _ = fs::create_dir_all(&base);
+    }
+    base.join("recent_projects.json")
+}
+
+fn load_recent_projects_internal() -> Vec<RecentProject> {
+    let path = get_recent_projects_file();
+    if let Ok(data) = fs::read_to_string(&path) {
+        if let Ok(mut list) = serde_json::from_str::<Vec<RecentProject>>(&data) {
+            for item in &mut list {
+                let p = Path::new(&item.path);
+                item.exists = p.is_file();
+                if let Ok(meta) = p.metadata() {
+                    item.file_size = meta.len();
+                }
+            }
+            list.sort_by(|a, b| b.last_opened.cmp(&a.last_opened));
+            return list;
+        }
+    }
+    Vec::new()
+}
+
+fn save_recent_projects_internal(list: &[RecentProject]) {
+    let path = get_recent_projects_file();
+    if let Ok(json) = serde_json::to_string_pretty(list) {
+        let _ = fs::write(path, json);
+    }
+}
+
+fn add_recent_project_internal(file_path: &str) {
+    let path = Path::new(file_path);
+    if !path.is_file() {
+        return;
+    }
+    let mut list = load_recent_projects_internal();
+    let name = path.file_name().unwrap_or_default().to_string_lossy().to_string();
+    let file_size = path.metadata().map(|m| m.len()).unwrap_or(0);
+    let ts = current_timestamp();
+
+    list.retain(|item| item.path != file_path);
+    list.insert(0, RecentProject {
+        path: file_path.to_string(),
+        name,
+        last_opened: ts,
+        file_size,
+        exists: true,
+    });
+    if list.len() > 30 {
+        list.truncate(30);
+    }
+    save_recent_projects_internal(&list);
 }
 
 fn create_system_command<P: AsRef<std::ffi::OsStr>>(bin: P) -> Command {
@@ -29,7 +97,31 @@ fn create_system_command<P: AsRef<std::ffi::OsStr>>(bin: P) -> Command {
     cmd
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RecentProject {
+    pub path: String,
+    pub name: String,
+    pub last_opened: u64,
+    pub file_size: u64,
+    pub exists: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct OpenFilePayload {
+    pub path: String,
+    pub name: String,
+    pub content: String,
+    pub last_modified: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SaveResult {
+    pub success: bool,
+    pub path: String,
+    pub name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct CompileResponse {
     pdf_buffer: Option<Vec<u8>>,
     log: Option<String>,
@@ -37,13 +129,25 @@ pub struct CompileResponse {
 }
 
 #[tauri::command]
-async fn compile_latex(code: String) -> Result<CompileResponse, String> {
+async fn compile_latex(code: String, project_path: Option<String>) -> Result<CompileResponse, String> {
     let dir = get_workspace_dir().map_err(|e| e.to_string())?;
     let tex_path = dir.join("document.tex");
     
     fs::write(&tex_path, code).map_err(|e| e.to_string())?;
 
-    let output = create_system_command("pdflatex")
+    let mut cmd = create_system_command("pdflatex");
+    
+    // Set current working directory to document's parent folder for relative assets
+    if let Some(ref proj_file) = project_path {
+        let p = PathBuf::from(proj_file);
+        if let Some(parent) = p.parent() {
+            if parent.is_dir() {
+                cmd.current_dir(parent);
+            }
+        }
+    }
+
+    let output = cmd
         .arg("-synctex=1")
         .arg("-interaction=nonstopmode")
         .arg("-halt-on-error")
@@ -209,10 +313,145 @@ fn save_docx(code: String) -> Result<bool, String> {
     }
 }
 
+#[tauri::command]
+fn list_recent_projects() -> Result<Vec<RecentProject>, String> {
+    Ok(load_recent_projects_internal())
+}
+
+#[tauri::command]
+fn remove_recent_project(path: String) -> Result<bool, String> {
+    let mut list = load_recent_projects_internal();
+    list.retain(|item| item.path != path);
+    save_recent_projects_internal(&list);
+    Ok(true)
+}
+
+#[tauri::command]
+fn read_file_by_path(path: String) -> Result<OpenFilePayload, String> {
+    let p = PathBuf::from(&path);
+    if !p.is_file() {
+        return Err(format!("File does not exist: {}", path));
+    }
+    let content = fs::read_to_string(&p).map_err(|e| format!("Could not read file: {}", e))?;
+    let name = p.file_name().unwrap_or_default().to_string_lossy().to_string();
+    let last_modified = p.metadata()
+        .and_then(|m| m.modified())
+        .ok()
+        .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    add_recent_project_internal(&path);
+    Ok(OpenFilePayload {
+        path,
+        name,
+        content,
+        last_modified,
+    })
+}
+
+#[tauri::command]
+fn open_file_dialog() -> Result<Option<OpenFilePayload>, String> {
+    let filter = ["*.tex", "*.latex", "*.ltx", "*.md", "*.txt"];
+    if let Some(selected_path) = tinyfiledialogs::open_file_dialog(
+        "Open Project / Document",
+        "",
+        Some((&filter, "LaTeX & Text Documents (*.tex, *.md, *.txt)"))
+    ) {
+        let payload = read_file_by_path(selected_path)?;
+        Ok(Some(payload))
+    } else {
+        Ok(None)
+    }
+}
+
+#[tauri::command]
+fn get_launch_file() -> Result<Option<OpenFilePayload>, String> {
+    for arg in std::env::args_os().skip(1) {
+        let arg_str = arg.to_string_lossy();
+        if arg_str.starts_with('-') {
+            continue;
+        }
+        let p = PathBuf::from(&arg);
+        if p.is_file() {
+            if let Ok(payload) = read_file_by_path(p.to_string_lossy().to_string()) {
+                return Ok(Some(payload));
+            }
+        }
+    }
+    Ok(None)
+}
+
+#[tauri::command]
+fn save_file_direct(path: Option<String>, content: String) -> Result<SaveResult, String> {
+    let target_path_str = if let Some(p) = path {
+        if p.trim().is_empty() {
+            None
+        } else {
+            Some(p)
+        }
+    } else {
+        None
+    };
+
+    let final_path = match target_path_str {
+        Some(p) => PathBuf::from(p),
+        None => {
+            let filter = ["*.tex", "*.latex", "*.md", "*.txt"];
+            if let Some(chosen) = tinyfiledialogs::save_file_dialog_with_filter(
+                "Save Document",
+                "document.tex",
+                &filter,
+                "LaTeX Document (*.tex)"
+            ) {
+                PathBuf::from(chosen)
+            } else {
+                return Ok(SaveResult {
+                    success: false,
+                    path: String::new(),
+                    name: String::new(),
+                });
+            }
+        }
+    };
+
+    // Atomic write via temporary file in the same directory
+    let parent_dir = final_path.parent().unwrap_or(Path::new("."));
+    let temp_filename = format!(".{}.tmp", final_path.file_name().unwrap_or_default().to_string_lossy());
+    let temp_path = parent_dir.join(temp_filename);
+
+    fs::write(&temp_path, &content).map_err(|e| format!("Failed to write temporary buffer: {}", e))?;
+    if let Err(e) = fs::rename(&temp_path, &final_path) {
+        // Fallback to copy/remove if rename across mount boundaries fails
+        fs::copy(&temp_path, &final_path).map_err(|copy_err| format!("Failed to save file: {} ({})", e, copy_err))?;
+        let _ = fs::remove_file(&temp_path);
+    }
+
+    let path_str = final_path.to_string_lossy().to_string();
+    let name_str = final_path.file_name().unwrap_or_default().to_string_lossy().to_string();
+    add_recent_project_internal(&path_str);
+
+    Ok(SaveResult {
+        success: true,
+        path: path_str,
+        name: name_str,
+    })
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![compile_latex, synctex, save_pdf, save_docx])
+    .invoke_handler(tauri::generate_handler![
+        compile_latex,
+        synctex,
+        save_pdf,
+        save_docx,
+        get_launch_file,
+        open_file_dialog,
+        read_file_by_path,
+        save_file_direct,
+        list_recent_projects,
+        remove_recent_project
+    ])
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -225,4 +464,48 @@ pub fn run() {
     })
     .run(tauri::generate_context!())
     .expect("error while building tauri application");
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_recent_projects_serde() {
+        let sample = RecentProject {
+            path: "C:/test/doc.tex".into(),
+            name: "doc.tex".into(),
+            last_opened: 1700000000,
+            file_size: 1024,
+            exists: true,
+        };
+        let json = serde_json::to_string(&sample).expect("serialize");
+        let decoded: RecentProject = serde_json::from_str(&json).expect("deserialize");
+        assert_eq!(decoded.name, "doc.tex");
+        assert_eq!(decoded.file_size, 1024);
+    }
+
+    #[test]
+    fn test_save_and_read_file_direct() {
+        let temp_dir = std::env::temp_dir().join("latex_editor_test_io");
+        let _ = fs::create_dir_all(&temp_dir);
+        let test_file = temp_dir.join("test_article.tex");
+        let content = "\\documentclass{article}\n\\begin{document}\nHello V2\n\\end{document}";
+
+        let res = save_file_direct(Some(test_file.to_string_lossy().to_string()), content.into());
+        assert!(res.is_ok(), "save_file_direct failed: {:?}", res);
+        let save_info = res.unwrap();
+        assert!(save_info.success);
+        assert_eq!(save_info.name, "test_article.tex");
+
+        let read_res = read_file_by_path(test_file.to_string_lossy().to_string());
+        assert!(read_res.is_ok(), "read_file_by_path failed: {:?}", read_res);
+        let payload = read_res.unwrap();
+        assert_eq!(payload.content, content);
+        assert_eq!(payload.name, "test_article.tex");
+
+        let _ = fs::remove_file(&test_file);
+        let _ = fs::remove_dir(&temp_dir);
+    }
 }

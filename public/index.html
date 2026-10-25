@@ -9,9 +9,11 @@
     <!-- CodeMirror (Offline Local Vendor) -->
     <link rel="stylesheet" href="/vendor/codemirror/codemirror.min.css">
     <link rel="stylesheet" href="/vendor/codemirror/monokai.min.css">
+    <link rel="stylesheet" href="/vendor/codemirror/show-hint.min.css">
     <script src="/vendor/codemirror/codemirror.min.js"></script>
     <script src="/vendor/codemirror/stex.min.js"></script>
     <script src="/vendor/codemirror/active-line.min.js"></script>
+    <script src="/vendor/codemirror/show-hint.min.js"></script>
 
     <!-- PDF.js (Offline Local Vendor) -->
     <script src="/vendor/pdfjs/pdf.min.js"></script>
@@ -24,10 +26,11 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="header-left">
+    <!-- VIEW 1: Welcome & Projects Dashboard -->
+    <div id="welcome-view" class="view-screen">
+        <header class="welcome-header">
             <div class="logo">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -35,99 +38,199 @@
                     <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
                 <span>LaTeX Editor</span>
+                <span class="badge-v2">v2.0</span>
             </div>
-            <div id="status-pill" class="status-pill status-ready">Ready</div>
-        </div>
-
-        <div class="header-center">
-            <div class="zoom-stepper">
-                <button id="zoom-out-btn" class="stepper-btn" title="Zoom Out (Ctrl -)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <span id="zoom-level">150%</span>
-                <button id="zoom-in-btn" class="stepper-btn" title="Zoom In (Ctrl +)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-            </div>
-        </div>
-
-        <div class="header-right">
-            <button id="auto-compile-toggle" class="btn btn-toggle" title="Toggle Auto-Compilation on Typing">
-                <span class="toggle-dot"></span>
-                <span class="toggle-text">Auto-Compile: <strong id="auto-compile-label">OFF</strong></span>
-            </button>
-            <button id="compile-btn" class="btn btn-primary" title="Compile LaTeX (Ctrl+S / Ctrl+Enter)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-                <span>Compile</span>
-            </button>
-            <div class="dropdown" id="export-dropdown">
-                <button id="export-menu-btn" class="btn btn-secondary" title="Export document">
+            <div class="welcome-header-right">
+                <div class="search-box">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <span>Export</span>
-                    <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <polyline points="6 9 12 15 18 9"></polyline>
+                    <input type="text" id="project-search" placeholder="Filter recent projects..." spellcheck="false">
+                </div>
+            </div>
+        </header>
+
+        <div class="welcome-content">
+            <div class="welcome-actions-row">
+                <div class="welcome-hero-card">
+                    <h2>Projects & Workspaces</h2>
+                    <p>Work directly with your local LaTeX, Markdown, or text documents with crash-free offline compilation, instant SyncTeX navigation, and intelligent autocompletion.</p>
+                    <div class="hero-buttons">
+                        <button id="btn-new-project" class="btn btn-primary btn-large">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>New Project</span>
+                        </button>
+                        <button id="btn-open-project" class="btn btn-secondary btn-large">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>Open File / Project...</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="templates-card">
+                    <div class="card-title">Quick Starters</div>
+                    <div class="template-list">
+                        <button class="template-chip" data-template="article">
+                            <span class="chip-title">Research Article</span>
+                            <span class="chip-sub">Standard paper with equations</span>
+                        </button>
+                        <button class="template-chip" data-template="beamer">
+                            <span class="chip-title">Beamer Slides</span>
+                            <span class="chip-sub">Presentation slide deck</span>
+                        </button>
+                        <button class="template-chip" data-template="resume">
+                            <span class="chip-title">Resume / CV</span>
+                            <span class="chip-sub">Clean professional layout</span>
+                        </button>
+                        <button class="template-chip" data-template="math">
+                            <span class="chip-title">Math Cheatsheet</span>
+                            <span class="chip-sub">Formulas, matrices, and theorems</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-projects-section">
+                <div class="section-header">
+                    <h3>Recent Projects</h3>
+                    <span id="projects-count" class="count-badge">0</span>
+                </div>
+                <div id="recent-projects-list" class="projects-grid"></div>
+                <div id="empty-projects-state" class="empty-state hidden">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
                     </svg>
-                </button>
-                <div class="dropdown-menu" id="export-menu">
-                    <button id="export-pdf-item" class="dropdown-item">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                        <span>Export PDF (.pdf)</span>
-                    </button>
-                    <button id="export-docx-item" class="dropdown-item">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                        <span>Export Word (.docx)</span>
-                    </button>
+                    <h4>No Recent Projects</h4>
+                    <p>Open an existing .tex, .md, or .txt file, or create a new project to get started.</p>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="main-container">
-        <!-- Left Pane: Code Editor -->
-        <section id="editor-pane" class="split-pane">
-            <textarea id="latex-code"></textarea>
-        </section>
-
-        <!-- Right Pane: PDF Preview -->
-        <section id="preview-pane" class="split-pane">
-            <div id="pdf-scroll-container">
-                <div id="pdf-viewer"></div>
-            </div>
-
-            <!-- Error Overlay -->
-            <div id="error-overlay" class="hidden">
-                <div class="error-header">
-                    <div class="error-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                        <span>LaTeX Compilation Error</span>
-                    </div>
-                    <button id="error-dismiss-btn" class="error-close-btn">&times;</button>
+    <!-- VIEW 2: Dual-Pane Editor & PDF Preview -->
+    <div id="editor-view" class="view-screen hidden">
+        <header class="header">
+            <div class="header-left">
+                <button id="nav-projects-btn" class="btn btn-ghost" title="Back to Projects Dashboard">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Projects</span>
+                </button>
+                <div class="doc-info">
+                    <span id="doc-title" class="doc-title">document.tex</span>
+                    <span id="dirty-indicator" class="dirty-dot hidden" title="Unsaved changes">●</span>
                 </div>
-                <pre id="error-log"></pre>
+                <div id="status-pill" class="status-pill status-ready">Ready</div>
             </div>
-        </section>
-    </main>
 
-    <!-- Application Script -->
+            <div class="header-center">
+                <div class="zoom-stepper">
+                    <button id="zoom-out-btn" class="stepper-btn" title="Zoom Out (Ctrl -)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <span id="zoom-level">135%</span>
+                    <button id="zoom-in-btn" class="stepper-btn" title="Zoom In (Ctrl +)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button id="save-btn" class="btn btn-secondary" title="Save Document to Disk (Ctrl+S)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Save</span>
+                </button>
+                <button id="auto-compile-toggle" class="btn btn-toggle" title="Toggle Auto-Compilation on Typing">
+                    <span class="toggle-dot"></span>
+                    <span class="toggle-text">Auto-Compile: <strong id="auto-compile-label">OFF</strong></span>
+                </button>
+                <button id="compile-btn" class="btn btn-primary" title="Compile LaTeX (Ctrl+Enter)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Compile</span>
+                </button>
+                <div class="dropdown" id="export-dropdown">
+                    <button id="export-menu-btn" class="btn btn-secondary" title="Export document">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Export</span>
+                        <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu" id="export-menu">
+                        <button id="export-pdf-item" class="dropdown-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>Export PDF (.pdf)</span>
+                        </button>
+                        <button id="export-docx-item" class="dropdown-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            <span>Export Word (.docx)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <!-- Left Pane: Code Editor -->
+            <section id="editor-pane" class="split-pane">
+                <textarea id="latex-code"></textarea>
+            </section>
+
+            <!-- Right Pane: PDF Preview -->
+            <section id="preview-pane" class="split-pane">
+                <div id="pdf-scroll-container">
+                    <div id="pdf-viewer"></div>
+                </div>
+
+                <!-- Error Overlay -->
+                <div id="error-overlay" class="hidden">
+                    <div class="error-header">
+                        <div class="error-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>LaTeX Compilation Error</span>
+                        </div>
+                        <button id="error-dismiss-btn" class="error-close-btn">&times;</button>
+                    </div>
+                    <pre id="error-log"></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Application Scripts -->
     <script src="/backend-adapter.js"></script>
+    <script src="/latex-autocomplete.js"></script>
     <script src="/main.js"></script>
 </body>
 </html>

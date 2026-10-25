@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "LaTeX Editor",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "identifier": "com.latex.editor",
   "build": {
     "frontendDist": "../public"
@@ -28,6 +28,20 @@
     "copyright": "Copyright © 2026 Shounak Saha",
     "shortDescription": "100% offline native LaTeX Editor",
     "longDescription": "A lightweight, crash-free 100% offline native desktop LaTeX editor built with Tauri and Rust.",
+    "fileAssociations": [
+      {
+        "ext": ["tex", "latex", "ltx"],
+        "name": "LaTeX Document",
+        "description": "LaTeX Source File",
+        "role": "Editor"
+      },
+      {
+        "ext": ["txt", "md"],
+        "name": "Text Document",
+        "description": "Text Document",
+        "role": "Editor"
+      }
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

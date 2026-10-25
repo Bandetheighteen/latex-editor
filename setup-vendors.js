@@ -24,6 +24,14 @@ const vendors = [
     url: 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/selection/active-line.min.js',
     dest: 'public/vendor/codemirror/active-line.min.js'
   },
+  {
+    url: 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.js',
+    dest: 'public/vendor/codemirror/show-hint.min.js'
+  },
+  {
+    url: 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.css',
+    dest: 'public/vendor/codemirror/show-hint.min.css'
+  },
   // PDF.js
   {
     url: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js',
