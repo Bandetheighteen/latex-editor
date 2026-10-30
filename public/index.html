@@ -52,6 +52,20 @@
         </header>
 
         <div class="welcome-content">
+            <div id="tablet-disclaimer-banner" class="tablet-disclaimer-banner">
+                <div class="disclaimer-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                </div>
+                <div class="disclaimer-text">
+                    <strong>Tablet &amp; Landscape Recommended</strong>
+                    <span>LaTeX Editor is optimized for landscape side-by-side editing and PDF preview. Best experienced on tablets or with your mobile phone in landscape mode.</span>
+                </div>
+                <button id="disclaimer-dismiss-btn" class="disclaimer-dismiss" title="Dismiss notice">&times;</button>
+            </div>
+
             <div class="welcome-actions-row">
                 <div class="welcome-hero-card">
                     <h2>Projects & Workspaces</h2>
@@ -200,7 +214,11 @@
         <main class="main-container">
             <!-- Left Pane: Code Editor -->
             <section id="editor-pane" class="split-pane">
-                <textarea id="latex-code"></textarea>
+                <div class="editor-container">
+                    <textarea id="latex-code"></textarea>
+                </div>
+                <!-- LaTeX Symbol Access Bar Docked at Bottom of Editor -->
+                <div id="latex-symbol-bar" class="latex-symbol-bar" role="toolbar" aria-label="LaTeX Symbols Toolbar"></div>
             </section>
 
             <!-- Right Pane: PDF Preview -->

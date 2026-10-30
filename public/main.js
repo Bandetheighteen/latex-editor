@@ -162,10 +162,10 @@ Start writing your LaTeX content here...
 `
     };
 
-    // 2. Initialize Split.js Panes
+    // 2. Initialize Split.js Panes (Optimized for side-by-side landscape on tablets and phones)
     Split(['#editor-pane', '#preview-pane'], {
         sizes: [48, 52],
-        minSize: [300, 350],
+        minSize: [200, 200],
         gutterSize: 6,
         cursor: 'col-resize'
     });
@@ -219,6 +219,205 @@ Start writing your LaTeX content here...
             }
         }
     });
+
+    // 5b. LaTeX Symbol Access Bar & Mobile Virtual Keyboard Handling
+    const LATEX_SYMBOLS = [
+        // Fractions & Roots
+        { label: 'a/b', snippet: '\\frac{1}{2}', title: 'Fraction: \\frac{}{}' },
+        { label: '√x', snippet: '\\sqrt{x}', title: 'Square Root: \\sqrt{}' },
+        { label: 'x²', snippet: '^{2}', title: 'Superscript: ^{}' },
+        { label: 'xᵢ', snippet: '_{i}', title: 'Subscript: _{}' },
+        { type: 'sep' },
+        // Large Operators
+        { label: '∑', snippet: '\\sum_{i=1}^{n} ', title: 'Summation: \\sum' },
+        { label: '∫', snippet: '\\int_{a}^{b} ', title: 'Integral: \\int' },
+        { label: '∏', snippet: '\\prod_{i=1}^{n} ', title: 'Product: \\prod' },
+        { label: 'lim', snippet: '\\lim_{x \\to 0} ', title: 'Limit: \\lim' },
+        { type: 'sep' },
+        // Greek Letters
+        { label: 'α', snippet: '\\alpha ', title: 'Alpha' },
+        { label: 'β', snippet: '\\beta ', title: 'Beta' },
+        { label: 'γ', snippet: '\\gamma ', title: 'Gamma' },
+        { label: 'θ', snippet: '\\theta ', title: 'Theta' },
+        { label: 'λ', snippet: '\\lambda ', title: 'Lambda' },
+        { label: 'π', snippet: '\\pi ', title: 'Pi' },
+        { label: 'σ', snippet: '\\sigma ', title: 'Sigma' },
+        { label: 'ω', snippet: '\\omega ', title: 'Omega' },
+        { label: 'Δ', snippet: '\\Delta ', title: 'Delta' },
+        { type: 'sep' },
+        // Relations & Operators
+        { label: '≠', snippet: '\\neq ', title: 'Not Equal' },
+        { label: '≤', snippet: '\\leq ', title: 'Less Than or Equal' },
+        { label: '≥', snippet: '\\geq ', title: 'Greater Than or Equal' },
+        { label: '≈', snippet: '\\approx ', title: 'Approximately' },
+        { label: '±', snippet: '\\pm ', title: 'Plus-Minus' },
+        { label: '×', snippet: '\\times ', title: 'Times' },
+        { label: '÷', snippet: '\\div ', title: 'Division' },
+        { label: '∞', snippet: '\\infty ', title: 'Infinity' },
+        { label: '∂', snippet: '\\partial ', title: 'Partial Derivative' },
+        { type: 'sep' },
+        // Arrows & Sets
+        { label: '→', snippet: '\\to ', title: 'Right Arrow' },
+        { label: '⇒', snippet: '\\implies ', title: 'Implies' },
+        { label: '∈', snippet: '\\in ', title: 'Element Of' },
+        { label: '∉', snippet: '\\notin ', title: 'Not In' },
+        { label: '⊂', snippet: '\\subset ', title: 'Subset' },
+        { label: '∪', snippet: '\\cup ', title: 'Union' },
+        { label: '∩', snippet: '\\cap ', title: 'Intersection' },
+        { label: '∀', snippet: '\\forall ', title: 'For All' },
+        { label: '∃', snippet: '\\exists ', title: 'Exists' },
+        { type: 'sep' },
+        // Enclosures & Text
+        { label: '{ }', snippet: '\\{  \\}', title: 'Curly Braces' },
+        { label: '( )', snippet: '\\left(  \\right)', title: 'Auto-sized Parentheses' },
+        { label: '$$', snippet: '$$\n\n$$', title: 'Display Math Block' },
+        { label: 'B', snippet: '\\textbf{}', title: 'Bold Text' },
+        { label: 'I', snippet: '\\textit{}', title: 'Italic Text' },
+        { label: 'text', snippet: '\\text{}', title: 'Normal Text' }
+    ];
+
+    function insertLatexSymbol(item) {
+        const doc = editor.getDoc();
+        const cursor = doc.getCursor();
+        const selection = doc.getSelection();
+
+        let snippet = item.snippet;
+        if (selection && snippet.includes('{}')) {
+            snippet = snippet.replace('{}', `{${selection}}`);
+            doc.replaceSelection(snippet);
+            return;
+        }
+
+        doc.replaceRange(snippet, cursor);
+
+        // Position cursor at placeholder
+        if (snippet === '\\frac{1}{2}') {
+            doc.setSelection({ line: cursor.line, ch: cursor.ch + 6 }, { line: cursor.line, ch: cursor.ch + 7 });
+        } else if (snippet.includes('{}')) {
+            const bracePos = snippet.indexOf('{');
+            doc.setCursor({ line: cursor.line, ch: cursor.ch + bracePos + 1 });
+        } else if (snippet.includes('{  }')) {
+            doc.setCursor({ line: cursor.line, ch: cursor.ch + snippet.indexOf('{  }') + 2 });
+        } else if (snippet.includes('(  )')) {
+            doc.setCursor({ line: cursor.line, ch: cursor.ch + snippet.indexOf('(  )') + 2 });
+        } else if (snippet === '$$\n\n$$') {
+            doc.setCursor({ line: cursor.line + 1, ch: 0 });
+        } else {
+            doc.setCursor({ line: cursor.line, ch: cursor.ch + snippet.length });
+        }
+    }
+
+    function initLatexSymbolBar() {
+        const symbolBar = document.getElementById('latex-symbol-bar');
+        if (!symbolBar) return;
+        symbolBar.innerHTML = '';
+
+        LATEX_SYMBOLS.forEach(item => {
+            if (item.type === 'sep') {
+                const sep = document.createElement('div');
+                sep.className = 'symbol-separator';
+                symbolBar.appendChild(sep);
+                return;
+            }
+
+            const btn = document.createElement('button');
+            btn.className = 'symbol-btn';
+            btn.textContent = item.label;
+            btn.title = item.title || item.label;
+            btn.type = 'button';
+
+            // Prevent focus loss on desktop; support smooth horizontal touch scrolling on mobile
+            let touchMoved = false;
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            btn.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                insertLatexSymbol(item);
+            });
+
+            btn.addEventListener('touchstart', (e) => {
+                touchMoved = false;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            btn.addEventListener('touchmove', (e) => {
+                if (Math.abs(e.touches[0].clientX - touchStartX) > 10 || Math.abs(e.touches[0].clientY - touchStartY) > 10) {
+                    touchMoved = true;
+                }
+            }, { passive: true });
+
+            btn.addEventListener('touchend', (e) => {
+                if (!touchMoved) {
+                    e.preventDefault();
+                    insertLatexSymbol(item);
+                }
+            });
+
+            symbolBar.appendChild(btn);
+        });
+
+        // Virtual Keyboard hide/show detection:
+        // When on-screen keyboard appears, hide symbol bar so it doesn't move up.
+        // When keyboard is dismissed, restore symbol bar for comfortable tapping.
+        let maxObservedHeight = Math.max(window.innerHeight, (window.screen && window.screen.availHeight) || 0);
+
+        const checkKeyboard = () => {
+            const vv = window.visualViewport;
+            const currentHeight = vv ? vv.height : window.innerHeight;
+            if (currentHeight > maxObservedHeight) {
+                maxObservedHeight = currentHeight;
+            }
+
+            const refHeight = Math.max(maxObservedHeight, (window.screen && window.screen.availHeight) || 0);
+            const heightDiff = refHeight - currentHeight;
+
+            // In landscape, virtual keyboard consumes > 120px and reduces viewport to < 82% of reference height
+            const isKeyboardUp = heightDiff > 120 && (currentHeight < refHeight * 0.82);
+
+            if (isKeyboardUp) {
+                document.body.classList.add('keyboard-open');
+                symbolBar.classList.add('is-hidden');
+            } else {
+                document.body.classList.remove('keyboard-open');
+                symbolBar.classList.remove('is-hidden');
+            }
+
+            // Sync CodeMirror dimensions and avoid line clipping after viewport/symbol bar height changes
+            if (editor) {
+                editor.refresh();
+            }
+        };
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', checkKeyboard);
+            window.visualViewport.addEventListener('scroll', checkKeyboard);
+        }
+        window.addEventListener('resize', checkKeyboard);
+
+        // CodeMirror focus and blur listeners for immediate keyboard reactivity
+        editor.on('focus', () => {
+            setTimeout(checkKeyboard, 250);
+        });
+        editor.on('blur', () => {
+            setTimeout(checkKeyboard, 100);
+        });
+    }
+    initLatexSymbolBar();
+
+    // Tablet Recommendation Banner dismissal handler
+    const disclaimerBanner = document.getElementById('tablet-disclaimer-banner');
+    const dismissDisclaimerBtn = document.getElementById('disclaimer-dismiss-btn');
+    if (localStorage.getItem('tablet_banner_dismissed') === 'true') {
+        if (disclaimerBanner) disclaimerBanner.classList.add('hidden');
+    }
+    if (dismissDisclaimerBtn) {
+        dismissDisclaimerBtn.addEventListener('click', () => {
+            if (disclaimerBanner) disclaimerBanner.classList.add('hidden');
+            localStorage.setItem('tablet_banner_dismissed', 'true');
+        });
+    }
 
     // 6. Intelligent Autocomplete Trigger
     editor.on('inputRead', (cm, change) => {

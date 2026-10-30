@@ -121,56 +121,242 @@ pub struct SaveResult {
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CompileResponse {
-    pdf_buffer: Option<Vec<u8>>,
-    log: Option<String>,
-    error: Option<String>,
+    pub pdf_buffer: Option<Vec<u8>>,
+    pub log: Option<String>,
+    pub error: Option<String>,
+}
+
+pub trait LatexEngine: Send + Sync {
+    fn compile(&self, code: &str, project_path: Option<&str>, workspace_dir: &Path) -> Result<CompileResponse, String>;
+    fn is_available(&self) -> bool;
+    fn engine_name(&self) -> &'static str;
+}
+
+pub struct SystemLatexEngine;
+
+impl LatexEngine for SystemLatexEngine {
+    fn engine_name(&self) -> &'static str {
+        "System pdflatex"
+    }
+
+    fn is_available(&self) -> bool {
+        #[cfg(not(target_os = "android"))]
+        {
+            create_system_command("pdflatex").arg("--version").output().is_ok()
+        }
+        #[cfg(target_os = "android")]
+        {
+            false
+        }
+    }
+
+    fn compile(&self, code: &str, project_path: Option<&str>, dir: &Path) -> Result<CompileResponse, String> {
+        let tex_path = dir.join("document.tex");
+        fs::write(&tex_path, code).map_err(|e| e.to_string())?;
+
+        let mut cmd = create_system_command("pdflatex");
+
+        if let Some(proj_file) = project_path {
+            let p = PathBuf::from(proj_file);
+            if let Some(parent) = p.parent() {
+                if parent.is_dir() {
+                    cmd.current_dir(parent);
+                }
+            }
+        }
+
+        let output = cmd
+            .arg("-synctex=1")
+            .arg("-interaction=nonstopmode")
+            .arg("-halt-on-error")
+            .arg(format!("-output-directory={}", dir.display()))
+            .arg(&tex_path)
+            .output()
+            .map_err(|e| format!("Failed to spawn pdflatex: {}", e))?;
+
+        let pdf_path = dir.join("document.pdf");
+        let log_path = dir.join("document.log");
+
+        let pdf_buffer = fs::read(&pdf_path).ok();
+        let log_content = fs::read_to_string(&log_path).ok();
+
+        Ok(CompileResponse {
+            pdf_buffer,
+            log: log_content,
+            error: if !output.status.success() {
+                Some(String::from_utf8_lossy(&output.stdout).to_string())
+            } else {
+                None
+            },
+        })
+    }
+}
+
+pub fn get_tectonic_bin_path() -> PathBuf {
+    let bin_name = if cfg!(windows) { "tectonic.exe" } else { "tectonic" };
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(parent) = exe_path.parent() {
+            let candidates = [
+                parent.join("resources").join("binaries").join(bin_name),
+                parent.join("resources").join(bin_name),
+                parent.join("../Resources").join("binaries").join(bin_name),
+                parent.join("../Resources").join(bin_name),
+                parent.join("binaries").join(bin_name),
+                parent.join(bin_name),
+            ];
+            for p in &candidates {
+                if p.exists() { return p.clone(); }
+            }
+        }
+    }
+    let dev_candidates = [
+        PathBuf::from(format!("src-tauri/binaries/{}", bin_name)),
+        PathBuf::from(format!("binaries/{}", bin_name)),
+    ];
+    for p in &dev_candidates {
+        if p.exists() { return p.clone(); }
+    }
+
+    PathBuf::from(bin_name)
+}
+
+pub fn get_tectonic_bundle_path() -> Option<PathBuf> {
+    let bundle_names = ["bundle.ttb", "texlive.ttb", "default.ttb"];
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(parent) = exe_path.parent() {
+            let candidates = [
+                parent.join("resources").join("bundles"),
+                parent.join("resources"),
+                parent.join("../Resources").join("bundles"),
+                parent.join("../Resources"),
+                parent.join("bundles"),
+                parent.to_path_buf(),
+            ];
+            for dir in &candidates {
+                for name in &bundle_names {
+                    let p = dir.join(name);
+                    if p.exists() { return Some(p); }
+                }
+            }
+        }
+    }
+    let dev_candidates = [
+        PathBuf::from("src-tauri/bundles"),
+        PathBuf::from("src-tauri/binaries"),
+        PathBuf::from("bundles"),
+        PathBuf::from("binaries"),
+    ];
+    for dir in &dev_candidates {
+        for name in &bundle_names {
+            let p = dir.join(name);
+            if p.exists() { return Some(p); }
+        }
+    }
+    None
+}
+
+pub struct EmbeddedTectonicEngine;
+
+impl LatexEngine for EmbeddedTectonicEngine {
+    fn engine_name(&self) -> &'static str {
+        "Embedded Tectonic Engine"
+    }
+
+    fn is_available(&self) -> bool {
+        #[cfg(feature = "tectonic")]
+        {
+            true
+        }
+        #[cfg(not(feature = "tectonic"))]
+        {
+            get_tectonic_bin_path().exists()
+        }
+    }
+
+    fn compile(&self, code: &str, _project_path: Option<&str>, dir: &Path) -> Result<CompileResponse, String> {
+        #[cfg(feature = "tectonic")]
+        {
+            let pdf_data = tectonic::latex_to_pdf(code)
+                .map_err(|e| format!("Tectonic in-process compilation failed: {}", e))?;
+            let pdf_path = dir.join("document.pdf");
+            let _ = fs::write(&pdf_path, &pdf_data);
+            return Ok(CompileResponse {
+                pdf_buffer: Some(pdf_data),
+                log: Some("Compiled successfully with Embedded Tectonic Engine.".into()),
+                error: None,
+            });
+        }
+        #[cfg(not(feature = "tectonic"))]
+        {
+            let bin = get_tectonic_bin_path();
+            if bin.exists() {
+                let tex_path = dir.join("document.tex");
+                fs::write(&tex_path, code).map_err(|e| e.to_string())?;
+
+                let mut cmd = create_system_command(&bin);
+
+                let bundle_opt = get_tectonic_bundle_path();
+                if let Some(ref bundle_path) = bundle_opt {
+                    cmd.arg("--bundle").arg(bundle_path).arg("--only-cached");
+                }
+
+                let output = cmd
+                    .arg("-o")
+                    .arg(dir)
+                    .arg(&tex_path)
+                    .output()
+                    .map_err(|e| format!("Failed to spawn bundled tectonic: {}", e))?;
+
+                let pdf_path = dir.join("document.pdf");
+                let pdf_buffer = fs::read(&pdf_path).ok();
+                let status_msg = if bundle_opt.is_some() {
+                    "Compiled with Bundled Tectonic Engine (100% offline bundle mode)."
+                } else {
+                    "Compiled with Bundled Tectonic Engine."
+                };
+
+                return Ok(CompileResponse {
+                    pdf_buffer,
+                    log: Some(format!("{}\n{}", status_msg, String::from_utf8_lossy(&output.stdout))),
+                    error: if !output.status.success() {
+                        Some(String::from_utf8_lossy(&output.stderr).to_string())
+                    } else {
+                        None
+                    },
+                });
+            }
+
+            Err("Embedded Tectonic engine binary is not bundled yet. For 100% offline compilation on trips/mobile, place the tectonic engine and offline TeX bundle (bundle.ttb, ~150MB) in the app resources/binaries directory.".into())
+        }
+    }
 }
 
 #[tauri::command]
 async fn compile_latex(code: String, project_path: Option<String>) -> Result<CompileResponse, String> {
     let dir = get_workspace_dir().map_err(|e| e.to_string())?;
-    let tex_path = dir.join("document.tex");
-    
-    fs::write(&tex_path, code).map_err(|e| e.to_string())?;
 
-    let mut cmd = create_system_command("pdflatex");
-    
-    // Set current working directory to document's parent folder for relative assets
-    if let Some(ref proj_file) = project_path {
-        let p = PathBuf::from(proj_file);
-        if let Some(parent) = p.parent() {
-            if parent.is_dir() {
-                cmd.current_dir(parent);
-            }
+    let embedded = EmbeddedTectonicEngine;
+    let system = SystemLatexEngine;
+
+    // Prefer embedded engine when available or running on mobile/Android
+    if cfg!(target_os = "android") || embedded.is_available() {
+        if embedded.is_available() {
+            return embedded.compile(&code, project_path.as_deref(), &dir);
         }
     }
 
-    let output = cmd
-        .arg("-synctex=1")
-        .arg("-interaction=nonstopmode")
-        .arg("-halt-on-error")
-        .arg(format!("-output-directory={}", dir.display()))
-        .arg(&tex_path)
-        .output()
-        .map_err(|e| format!("Failed to spawn pdflatex: {}", e))?;
+    if system.is_available() {
+        return system.compile(&code, project_path.as_deref(), &dir);
+    }
 
-    let pdf_path = dir.join("document.pdf");
-    let log_path = dir.join("document.log");
-
-    let pdf_buffer = fs::read(&pdf_path).ok();
-    let log_content = fs::read_to_string(&log_path).ok();
-
-    Ok(CompileResponse {
-        pdf_buffer,
-        log: log_content,
-        error: if !output.status.success() {
-            Some(String::from_utf8_lossy(&output.stdout).to_string())
-        } else {
-            None
-        },
-    })
+    // Attempt embedded engine fallback to return clear offline diagnostics
+    if embedded.is_available() {
+        embedded.compile(&code, project_path.as_deref(), &dir)
+    } else {
+        system.compile(&code, project_path.as_deref(), &dir)
+    }
 }
 
 #[derive(Serialize)]
@@ -507,5 +693,38 @@ mod tests {
 
         let _ = fs::remove_file(&test_file);
         let _ = fs::remove_dir(&temp_dir);
+    }
+
+    #[test]
+    fn test_compile_response_serde() {
+        let resp = CompileResponse {
+            pdf_buffer: Some(vec![37, 80, 68, 70]), // %PDF
+            log: Some("Compilation complete".into()),
+            error: None,
+        };
+        let json = serde_json::to_string(&resp).expect("serialize compile response");
+        let decoded: CompileResponse = serde_json::from_str(&json).expect("deserialize compile response");
+        assert_eq!(decoded.pdf_buffer, Some(vec![37, 80, 68, 70]));
+        assert_eq!(decoded.log, Some("Compilation complete".into()));
+        assert!(decoded.error.is_none());
+    }
+
+    #[test]
+    fn test_latex_engine_abstraction() {
+        let sys_engine = SystemLatexEngine;
+        assert_eq!(sys_engine.engine_name(), "System pdflatex");
+
+        let embedded_engine = EmbeddedTectonicEngine;
+        assert_eq!(embedded_engine.engine_name(), "Embedded Tectonic Engine");
+
+        // get_tectonic_bin_path should return a valid candidate path
+        let tectonic_path = get_tectonic_bin_path();
+        assert!(tectonic_path.to_string_lossy().contains("tectonic"));
+
+        // get_tectonic_bundle_path returns None when bundle is not present yet, or Some path if present
+        let bundle_opt = get_tectonic_bundle_path();
+        if let Some(ref bp) = bundle_opt {
+            assert!(bp.to_string_lossy().contains(".ttb"));
+        }
     }
 }

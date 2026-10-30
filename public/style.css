@@ -230,6 +230,16 @@ html, body {
 #editor-pane {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.editor-container {
+    flex: 1 1 0;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
 }
 
 .CodeMirror {
@@ -1016,3 +1026,197 @@ li.CodeMirror-hint-active .cm-hint-ref {
     color: var(--accent-blue);
     border: 1px solid var(--border-subtle);
 }
+
+/* ===================================================
+   Tablet & Landscape Recommendation Banner
+=================================================== */
+.tablet-disclaimer-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.16) 0%, rgba(37, 99, 235, 0.08) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.25s ease-out;
+}
+
+.tablet-disclaimer-banner.hidden {
+    display: none !important;
+}
+
+.disclaimer-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+}
+
+.disclaimer-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.disclaimer-text strong {
+    color: #93c5fd;
+    font-weight: 600;
+}
+
+.disclaimer-text span {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.disclaimer-dismiss {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.disclaimer-dismiss:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* ===================================================
+   LaTeX Symbol Access Bar
+   - Docked at the bottom of the editor pane
+   - Automatically hides when the virtual keyboard opens
+   - Re-appears when keyboard is dismissed for symbol tapping
+=================================================== */
+.latex-symbol-bar {
+    height: 44px;
+    min-height: 44px;
+    background-color: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    z-index: 5;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease, height 0.2s ease;
+}
+
+.latex-symbol-bar::-webkit-scrollbar {
+    height: 3px;
+}
+
+.latex-symbol-bar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+}
+
+/* Symbol chip / button */
+.symbol-btn {
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    border-radius: 6px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0 9px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.12s ease, transform 0.1s ease, border-color 0.12s ease;
+    flex-shrink: 0;
+    touch-action: manipulation;
+}
+
+.symbol-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--border-strong);
+    color: #ffffff;
+}
+
+.symbol-btn:active {
+    transform: scale(0.93);
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: #ffffff;
+}
+
+.symbol-separator {
+    width: 1px;
+    height: 22px;
+    background-color: var(--border-subtle);
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+/* KEY REQUIREMENT:
+   Virtual keyboard detection hide state.
+   When the on-screen keyboard appears, hide the symbol bar
+   so it never occupies precious vertical typing space.
+   When the keyboard is dismissed, the bar returns to view.
+*/
+body.keyboard-open .latex-symbol-bar,
+.latex-symbol-bar.is-hidden {
+    display: none !important;
+}
+
+/* ===================================================
+   Mobile & Tablet Landscape Responsiveness
+=================================================== */
+@media (max-width: 960px) and (orientation: landscape) {
+    .header {
+        height: 46px;
+        padding: 0 10px;
+    }
+
+    .main-container {
+        height: calc(100vh - 46px);
+    }
+
+    .header-left .logo span,
+    .header-left .badge-v2 {
+        display: none;
+    }
+
+    .btn {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+
+    .zoom-stepper {
+        display: none;
+    }
+
+    .latex-symbol-bar {
+        height: 40px;
+        min-height: 40px;
+    }
+
+    .symbol-btn {
+        height: 28px;
+        padding: 0 7px;
+        font-size: 12px;
+    }
+}
+

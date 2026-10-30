@@ -17,6 +17,10 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [build-dependencies]
 tauri-build = { version = "2.7.1", features = [] }
 
+[features]
+default = []
+tectonic = ["dep:tectonic"]
+
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -25,3 +29,5 @@ tauri = { version = "2.12.1", features = [] }
 tauri-plugin-log = "2"
 tempfile = "3"
 tinyfiledialogs = "3.9.1"
+tectonic = { version = "0.17.0", optional = true }
+
