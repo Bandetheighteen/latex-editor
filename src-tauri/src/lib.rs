@@ -422,16 +422,23 @@ fn save_pdf() -> Result<bool, String> {
         return Err("No compiled PDF found to save.".into());
     }
 
-    if let Some(target_path) = tinyfiledialogs::save_file_dialog_with_filter(
-        "Save PDF Document",
-        "document.pdf",
-        &["*.pdf"],
-        "PDF Document"
-    ) {
-        fs::copy(&pdf_path, target_path).map_err(|e| e.to_string())?;
+    #[cfg(not(target_os = "android"))]
+    {
+        if let Some(target_path) = tinyfiledialogs::save_file_dialog_with_filter(
+            "Save PDF Document",
+            "document.pdf",
+            &["*.pdf"],
+            "PDF Document"
+        ) {
+            fs::copy(&pdf_path, target_path).map_err(|e| e.to_string())?;
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+    #[cfg(target_os = "android")]
+    {
         Ok(true)
-    } else {
-        Ok(false)
     }
 }
 
@@ -486,16 +493,23 @@ fn save_docx(code: String) -> Result<bool, String> {
         return Err(format!("Pandoc conversion failed: {}", stderr));
     }
 
-    if let Some(target_path) = tinyfiledialogs::save_file_dialog_with_filter(
-        "Save Word Document",
-        "document.docx",
-        &["*.docx"],
-        "Word Document (*.docx)"
-    ) {
-        fs::copy(&docx_path, target_path).map_err(|e| e.to_string())?;
+    #[cfg(not(target_os = "android"))]
+    {
+        if let Some(target_path) = tinyfiledialogs::save_file_dialog_with_filter(
+            "Save Word Document",
+            "document.docx",
+            &["*.docx"],
+            "Word Document (*.docx)"
+        ) {
+            fs::copy(&docx_path, target_path).map_err(|e| e.to_string())?;
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+    #[cfg(target_os = "android")]
+    {
         Ok(true)
-    } else {
-        Ok(false)
     }
 }
 
@@ -537,15 +551,22 @@ fn read_file_by_path(path: String) -> Result<OpenFilePayload, String> {
 
 #[tauri::command]
 fn open_file_dialog() -> Result<Option<OpenFilePayload>, String> {
-    let filter = ["*.tex", "*.latex", "*.ltx", "*.md", "*.txt"];
-    if let Some(selected_path) = tinyfiledialogs::open_file_dialog(
-        "Open Project / Document",
-        "",
-        Some((&filter, "LaTeX & Text Documents (*.tex, *.md, *.txt)"))
-    ) {
-        let payload = read_file_by_path(selected_path)?;
-        Ok(Some(payload))
-    } else {
+    #[cfg(not(target_os = "android"))]
+    {
+        let filter = ["*.tex", "*.latex", "*.ltx", "*.md", "*.txt"];
+        if let Some(selected_path) = tinyfiledialogs::open_file_dialog(
+            "Open Project / Document",
+            "",
+            Some((&filter, "LaTeX & Text Documents (*.tex, *.md, *.txt)"))
+        ) {
+            let payload = read_file_by_path(selected_path)?;
+            Ok(Some(payload))
+        } else {
+            Ok(None)
+        }
+    }
+    #[cfg(target_os = "android")]
+    {
         Ok(None)
     }
 }
@@ -582,20 +603,28 @@ fn save_file_direct(path: Option<String>, content: String) -> Result<SaveResult,
     let final_path = match target_path_str {
         Some(p) => PathBuf::from(p),
         None => {
-            let filter = ["*.tex", "*.latex", "*.md", "*.txt"];
-            if let Some(chosen) = tinyfiledialogs::save_file_dialog_with_filter(
-                "Save Document",
-                "document.tex",
-                &filter,
-                "LaTeX Document (*.tex)"
-            ) {
-                PathBuf::from(chosen)
-            } else {
-                return Ok(SaveResult {
-                    success: false,
-                    path: String::new(),
-                    name: String::new(),
-                });
+            #[cfg(not(target_os = "android"))]
+            {
+                let filter = ["*.tex", "*.latex", "*.md", "*.txt"];
+                if let Some(chosen) = tinyfiledialogs::save_file_dialog_with_filter(
+                    "Save Document",
+                    "document.tex",
+                    &filter,
+                    "LaTeX Document (*.tex)"
+                ) {
+                    PathBuf::from(chosen)
+                } else {
+                    return Ok(SaveResult {
+                        success: false,
+                        path: String::new(),
+                        name: String::new(),
+                    });
+                }
+            }
+            #[cfg(target_os = "android")]
+            {
+                let dir = get_workspace_dir().map_err(|e| e.to_string())?;
+                dir.join("document.tex")
             }
         }
     };
