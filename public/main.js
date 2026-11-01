@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // Android edge-to-edge status bar / safe area detection
+    const isAndroid = /Android/i.test(navigator.userAgent) || (typeof window !== 'undefined' && window.__TAURI__ && /android/i.test(navigator.platform || ''));
+    if (isAndroid) {
+        document.documentElement.classList.add('is-android');
+        document.body.classList.add('is-android');
+    }
+
     // 1. Template Presets
     const TEMPLATES = {
         article: `\\documentclass[11pt,a4paper]{article}
@@ -165,7 +172,7 @@ Start writing your LaTeX content here...
     // 2. Initialize Split.js Panes (Optimized for side-by-side landscape on tablets and phones)
     Split(['#editor-pane', '#preview-pane'], {
         sizes: [48, 52],
-        minSize: [200, 200],
+        minSize: [120, 120],
         gutterSize: 6,
         cursor: 'col-resize'
     });
@@ -558,6 +565,7 @@ Start writing your LaTeX content here...
             }
         } catch (err) {
             console.error('PDF render error:', err);
+            throw err;
         }
     }
 
@@ -578,10 +586,15 @@ Start writing your LaTeX content here...
                 const blob = new Blob([response.pdfBuffer], { type: 'application/pdf' });
                 currentPdfUrl = URL.createObjectURL(blob);
 
-                await renderPdf(currentPdfUrl);
-
-                errorOverlay.classList.add('hidden');
-                setStatus('Compiled Successfully', 'status-success');
+                try {
+                    await renderPdf(currentPdfUrl);
+                    errorOverlay.classList.add('hidden');
+                    setStatus('Compiled Successfully', 'status-success');
+                } catch (renderErr) {
+                    errorLog.textContent = 'PDF Preview Error: ' + (renderErr.message || renderErr);
+                    errorOverlay.classList.remove('hidden');
+                    setStatus('Preview Error', 'status-error');
+                }
             } else {
                 errorLog.textContent = response.error || response.log || 'Unknown compilation failure';
                 errorOverlay.classList.remove('hidden');

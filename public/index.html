@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>LaTeX Editor</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script>
+        if (/Android/i.test(navigator.userAgent) || (typeof window !== 'undefined' && window.__TAURI__ && /android/i.test(navigator.platform || ''))) {
+            document.documentElement.classList.add('is-android');
+        }
+    </script>
     
     <!-- CodeMirror (Offline Local Vendor) -->
     <link rel="stylesheet" href="/vendor/codemirror/codemirror.min.css">
